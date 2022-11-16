@@ -16,10 +16,12 @@ namespace Incorporation
 
         private new SpriteRenderer renderer;
         private TileData tileData;
+        private GameManager gameManager;
 
         // Start is called before the first frame update
         void Start()
         {
+            gameManager = FindObjectOfType<GameManager>();
             tileData = GetComponent<TileData>();
             renderer = GetComponent<SpriteRenderer>();
             renderer.color = GetOwnershipColor();
@@ -44,7 +46,18 @@ namespace Incorporation
 
         private void OnMouseDown()
         {
+            if (gameManager.IsPlayerTurn() && Owner != Ownership.Player)
+            {
+                ChangeOwnership(Ownership.Player);
+                gameManager.EndTurn();
+            }
             Debug.Log($"{Owner}");
+        }
+
+        private void ChangeOwnership(Ownership owner)
+        {
+            Owner = owner;
+            renderer.color = GetOwnershipColor();
         }
         
         private Color GetOwnershipColor()
