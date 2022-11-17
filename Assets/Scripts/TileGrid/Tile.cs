@@ -1,19 +1,10 @@
 using System;
 using UnityEngine;
 
-namespace Incorporation
+namespace Incorporation.Assets.Scripts.TileGrid
 {
     public class Tile : MonoBehaviour
     {
-        public enum Ownership
-        {
-            None,
-            Player,
-            Enemy
-        };
-
-        public Ownership Owner = Ownership.None;
-
         private new SpriteRenderer renderer;
         private TileData tileData;
         private GameManager gameManager;
@@ -21,6 +12,7 @@ namespace Incorporation
         // Start is called before the first frame update
         void Start()
         {
+            
             gameManager = FindObjectOfType<GameManager>();
             tileData = GetComponent<TileData>();
             renderer = GetComponent<SpriteRenderer>();
@@ -46,38 +38,38 @@ namespace Incorporation
 
         private void OnMouseDown()
         {
-            if (gameManager.IsPlayerTurn() && Owner != Ownership.Player)
+            if (gameManager.IsPlayerTurn() && tileData.Owner != Ownership.Player)
             {
                 ChangeOwnership(Ownership.Player);
-                gameManager.EndTurn();
+                //gameManager.EndTurn();
             }
-            Debug.Log($"{Owner}");
+            Debug.Log($"{tileData.Owner}");
         }
 
         private void ChangeOwnership(Ownership owner)
         {
-            Owner = owner;
+            tileData.Owner = owner;
             renderer.color = GetOwnershipColor();
         }
         
         private Color GetOwnershipColor()
         {
-            if (Owner == Ownership.None)
+            if (tileData.Owner == Ownership.None)
             {
                 return new Color(0.86f, 0.86f, 0.86f);
             }
 
-            if (Owner == Ownership.Enemy)
+            if (tileData.Owner == Ownership.Enemy)
             {
                 return new Color(0.80f, 0.27f, 0.27f);
             }
 
-            if (Owner == Ownership.Player)
+            if (tileData.Owner == Ownership.Player)
             {
                 return new Color(0.07f, 0.666f, 0);
             }
 
-            throw new ArgumentException($"Tile ownership not set as expected: {Owner}");
+            throw new ArgumentException($"Tile ownership not set as expected: {tileData.Owner}");
         }
     }
 }
