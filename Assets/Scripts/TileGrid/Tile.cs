@@ -51,7 +51,7 @@ namespace Incorporation.Assets.Scripts.TileGrid
             tileData.Owner = owner;
             renderer.color = GetOwnershipColor();
         }
-        
+
         private Color GetOwnershipColor()
         {
             if (tileData.Owner == Ownership.None)
