@@ -125,6 +125,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b5f64381d5107fa408f462cef4219411, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _tileClickEventChannel: {fileID: 11400000, guid: 6fc5c94d4fe92ad47a42ac4dba58c181, type: 2}
 --- !u!114 &-351884083852499328
 MonoBehaviour:
   m_ObjectHideFlags: 0

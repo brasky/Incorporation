@@ -1,9 +1,10 @@
+﻿using UnityEngine.Events;
 using UnityEngine;
-using UnityEngine.Events;
 
-namespace Incorporation
+namespace Incorporation.Assets.ScriptableObjects.EventChannels
 {
-    public class TileEventChannel : SerializableScriptableObject
+    [CreateAssetMenu(menuName = "Events/VoidEventChannel")]
+    public class VoidEventChannel : SerializableScriptableObject
     {
         [TextArea] public string description;
 

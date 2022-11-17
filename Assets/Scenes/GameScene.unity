@@ -156,6 +156,7 @@ MonoBehaviour:
   height: 5
   tilePrefab: {fileID: 6730570100932896178, guid: 2bd2a2e73b9f89c4889baf02a7dabef7, type: 3}
   camera: {fileID: 601134659}
+  _tileClickEventChannel: {fileID: 11400000, guid: 6fc5c94d4fe92ad47a42ac4dba58c181, type: 2}
 --- !u!4 &6989305
 Transform:
   m_ObjectHideFlags: 0
@@ -238,51 +239,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 4
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &195106156
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 195106158}
-  - component: {fileID: 195106157}
-  m_Layer: 0
-  m_Name: Player
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &195106157
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 195106156}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7055cf95d214f444f83485d0093bb2f1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Name: Test Name
---- !u!4 &195106158
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 195106156}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 741.1314, y: 358.22455, z: 4.9294853}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &380107774
 GameObject:
@@ -501,7 +457,55 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 1
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &897496358
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 897496360}
+  - component: {fileID: 897496359}
+  m_Layer: 0
+  m_Name: UIManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &897496359
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 897496358}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d41e9ee5b2e71b74d8b428a42030e2ac, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _gameDataChannel: {fileID: 11400000, guid: d682072585ecc0646a9ea4b2f603f105, type: 2}
+  _endTurnButtonPressChannel: {fileID: 11400000, guid: 1735be1a600ae0e4f9b5db522a2e73b5, type: 2}
+  _endTurnChannel: {fileID: 11400000, guid: 1735be1a600ae0e4f9b5db522a2e73b5, type: 2}
+  _canvas: {fileID: 1622508209}
+--- !u!4 &897496360
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 897496358}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 741.1314, y: 358.22455, z: 4.9294853}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1455372927
 GameObject:
@@ -532,7 +536,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0bfb6660ebe4b774aa1d4ea5f8611460, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  state: 0
+  _numberOfPlayers: 2
+  _endTurnEventChannel: {fileID: 11400000, guid: 1735be1a600ae0e4f9b5db522a2e73b5, type: 2}
+  _gameDataEventChannel: {fileID: 11400000, guid: d682072585ecc0646a9ea4b2f603f105, type: 2}
+  playerPrefab: {fileID: 8558111331282226123, guid: e87c4a100faaa20438166f276b45d3b3, type: 3}
+  remotePlayerPrefab: {fileID: 239937120233065645, guid: 3590f3a7677d8aa4c8a137e61ecb28f1, type: 3}
 --- !u!4 &1455372929
 Transform:
   m_ObjectHideFlags: 0
@@ -546,7 +554,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 0
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1622508206
 GameObject:
@@ -649,51 +657,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
---- !u!1 &1695966120
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1695966122}
-  - component: {fileID: 1695966121}
-  m_Layer: 0
-  m_Name: PlayerEventListener
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1695966121
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1695966120}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: abf33745ca1d2c643a2deb8c4bf860ff, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _playerEventChannel: {fileID: 11400000, guid: 8dc89f169313dbf42956b75591f62c57, type: 2}
---- !u!4 &1695966122
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1695966120}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1109.4524, y: 184.35133, z: 4.041382}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 5
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2069808534
 GameObject:
   m_ObjectHideFlags: 0
@@ -778,15 +741,13 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 11400000, guid: 8dc89f169313dbf42956b75591f62c57, type: 2}
-        m_TargetAssemblyTypeName: Incorporation.Assets.ScriptableObjects.Player.PlayerEventChannel,
-          Assembly-CSharp
-        m_MethodName: RaiseEndTurnEvent
-        m_Mode: 2
+      - m_Target: {fileID: 897496359}
+        m_TargetAssemblyTypeName: Incorporation.UIManager, Assembly-CSharp
+        m_MethodName: EndTurnButtonPress
+        m_Mode: 1
         m_Arguments:
-          m_ObjectArgument: {fileID: 195106157}
-          m_ObjectArgumentAssemblyTypeName: Incorporation.Assets.Scripts.Player.Player,
-            Assembly-CSharp
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 

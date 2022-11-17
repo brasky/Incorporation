@@ -1,3 +1,4 @@
+using Incorporation.Assets.ScriptableObjects.EventChannels;
 using System;
 using UnityEngine;
 
@@ -7,13 +8,15 @@ namespace Incorporation.Assets.Scripts.TileGrid
     {
         private new SpriteRenderer renderer;
         private TileData tileData;
-        private GameManager gameManager;
+
+        [SerializeField]
+        private TileEventChannel _tileClickEventChannel;
+
+        public Ownership Owner => tileData.Owner;
 
         // Start is called before the first frame update
         void Start()
         {
-            
-            gameManager = FindObjectOfType<GameManager>();
             tileData = GetComponent<TileData>();
             renderer = GetComponent<SpriteRenderer>();
             renderer.color = GetOwnershipColor();
@@ -23,6 +26,12 @@ namespace Incorporation.Assets.Scripts.TileGrid
         void Update()
         {
         
+        }
+
+        public void SetOwner(Ownership owner)
+        {
+            tileData.Owner = owner;
+            renderer.color = GetOwnershipColor();
         }
 
         private void OnMouseOver()
@@ -38,18 +47,7 @@ namespace Incorporation.Assets.Scripts.TileGrid
 
         private void OnMouseDown()
         {
-            if (gameManager.IsPlayerTurn() && tileData.Owner != Ownership.Player)
-            {
-                ChangeOwnership(Ownership.Player);
-                //gameManager.EndTurn();
-            }
-            Debug.Log($"{tileData.Owner}");
-        }
-
-        private void ChangeOwnership(Ownership owner)
-        {
-            tileData.Owner = owner;
-            renderer.color = GetOwnershipColor();
+            _tileClickEventChannel.RaiseEvent(this);
         }
 
         private Color GetOwnershipColor()
