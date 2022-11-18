@@ -489,7 +489,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _gameDataChannel: {fileID: 11400000, guid: d682072585ecc0646a9ea4b2f603f105, type: 2}
-  _endTurnButtonPressChannel: {fileID: 11400000, guid: 1735be1a600ae0e4f9b5db522a2e73b5, type: 2}
   _endTurnChannel: {fileID: 11400000, guid: 1735be1a600ae0e4f9b5db522a2e73b5, type: 2}
   _canvas: {fileID: 1622508209}
 --- !u!4 &897496360
