@@ -1,4 +1,5 @@
 using Incorporation.Assets.ScriptableObjects.EventChannels;
+using Incorporation.Assets.Scripts.Players;
 using System;
 using UnityEngine;
 
@@ -12,13 +13,17 @@ namespace Incorporation.Assets.Scripts.TileGrid
         [SerializeField]
         private TileEventChannel _tileClickEventChannel;
 
-        public Ownership Owner => tileData.Owner;
+        public Player Owner => tileData.Owner;
 
         // Start is called before the first frame update
-        void Start()
+        void Awake()
         {
             tileData = GetComponent<TileData>();
             renderer = GetComponent<SpriteRenderer>();
+        }
+
+        void Start()
+        {
             renderer.color = GetOwnershipColor();
         }
 
@@ -28,7 +33,7 @@ namespace Incorporation.Assets.Scripts.TileGrid
         
         }
 
-        public void SetOwner(Ownership owner)
+        public void SetOwner(Player owner)
         {
             tileData.Owner = owner;
             renderer.color = GetOwnershipColor();
@@ -52,17 +57,17 @@ namespace Incorporation.Assets.Scripts.TileGrid
 
         private Color GetOwnershipColor()
         {
-            if (tileData.Owner == Ownership.None)
+            if (tileData.Owner.IsTheMarket)
             {
                 return new Color(0.86f, 0.86f, 0.86f);
             }
 
-            if (tileData.Owner == Ownership.Enemy)
+            if (tileData.Owner.IsRemote)
             {
                 return new Color(0.80f, 0.27f, 0.27f);
             }
 
-            if (tileData.Owner == Ownership.Player)
+            if (tileData.Owner.IsLocal)
             {
                 return new Color(0.07f, 0.666f, 0);
             }

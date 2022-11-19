@@ -2,16 +2,17 @@
 using Incorporation.Assets.ScriptableObjects.EventChannels;
 using UnityEngine;
 
-namespace Incorporation.Assets.Scripts.Player
+namespace Incorporation.Assets.Scripts.Players
 {
     public class Player : MonoBehaviour
     {
         private GameData _gameData;
-        private bool IsMyTurn = false;
-
+        
         public virtual bool IsRemote => false;
 
         public virtual bool IsLocal => !IsRemote;
+        
+        public virtual bool IsTheMarket => false;
 
         [SerializeField]
         private VoidEventChannel _endTurnEventChannel;

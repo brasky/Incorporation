@@ -138,5 +138,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b31dc50ad79996742897a508dc97cbed, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Owner: 0
+  Owner: {fileID: 0}
   Name: TestName

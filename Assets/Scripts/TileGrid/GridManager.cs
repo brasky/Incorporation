@@ -1,5 +1,7 @@
 using Incorporation.Assets.ScriptableObjects.EventChannels;
+using Incorporation.Assets.Scripts.Players;
 using System;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
@@ -22,10 +24,18 @@ namespace Incorporation.Assets.Scripts.TileGrid
         [SerializeField]
         private TileEventChannel _tileClickEventChannel;
 
+        private Player _theMarket;
+
+        void Awake()
+        {
+        }
+
         // Start is called before the first frame update
         void Start()
         {
+            _theMarket = FindObjectsOfType<Player>().Where(p => p.IsTheMarket).First();
             GenerateGrid();
+
             _tileClickEventChannel.OnEventRaised += HandleTileClickEvent;
         }
 
@@ -40,7 +50,8 @@ namespace Incorporation.Assets.Scripts.TileGrid
             {
                 for( int y = 0; y < height; y++)
                 {
-                    Instantiate(tilePrefab, new Vector3(x, y, 0), Quaternion.identity);
+                    var tile = Instantiate(tilePrefab, new Vector3(x, y, 0), Quaternion.identity);
+                    tile.SetOwner(_theMarket);
                 }
             }
 
@@ -50,7 +61,6 @@ namespace Incorporation.Assets.Scripts.TileGrid
 
         private void HandleTileClickEvent(Tile tile)
         {
-            Debug.Log(tile.Owner);
         }
     }
 }

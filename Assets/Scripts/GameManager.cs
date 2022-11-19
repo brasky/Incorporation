@@ -1,10 +1,8 @@
 using Incorporation.Assets.ScriptableObjects;
 using Incorporation.Assets.ScriptableObjects.EventChannels;
-using Incorporation.Assets.Scripts.Player;
+using Incorporation.Assets.Scripts.Players;
 using System.Collections;
 using System.Collections.Generic;
-using Unity.Collections;
-using Unity.Jobs;
 using UnityEngine;
 
 namespace Incorporation
@@ -24,6 +22,9 @@ namespace Incorporation
 
         [SerializeField]
         private Player playerPrefab;
+
+        [SerializeField]
+        private Player theMarketPrefab;
 
         [SerializeField]
         private RemotePlayer remotePlayerPrefab;
@@ -58,8 +59,11 @@ namespace Incorporation
             }
 
             var local = Instantiate(playerPrefab);
-            local.name = $"Local Player";
+            local.name = "Local Player";
             _players.Add(local);
+
+            var theMarket = Instantiate(theMarketPrefab);
+            theMarket.name = "The Market";
 
             for (int i = 1; i < _numberOfPlayers; i++)
             {
@@ -67,14 +71,25 @@ namespace Incorporation
                 remote.name = $"Remote Player {i}";
                 _players.Add(remote);
             }
+
+            _players.Add(theMarket);
         }
 
         void MoveNextPhase()
         {
             turnCount++;
             _gameData.ActivePlayer = _players[turnCount % _numberOfPlayers];
-            _gameData.State = _gameData.ActivePlayer.IsRemote ? GameState.REMOTEPLAYERTURN : GameState.LOCALPLAYERTURN;
-            _haveStartedPollingForRemotePlayer = false;
+            if (_gameData.ActivePlayer.IsTheMarket)
+            {
+                _gameData.State = GameState.MARKETTURN;
+            }
+            else
+            {
+                _gameData.State = _gameData.ActivePlayer.IsRemote ? GameState.REMOTEPLAYERTURN : GameState.LOCALPLAYERTURN;
+                _haveStartedPollingForRemotePlayer = false;
+
+            }
+
             _gameDataEventChannel.RaiseEvent(_gameData);
         }
 
@@ -85,6 +100,11 @@ namespace Incorporation
             {
                 _haveStartedPollingForRemotePlayer = true;
                 StartCoroutine(WaitForRemotePlayer());
+            }
+
+            if (_gameData.State == GameState.MARKETTURN)
+            {
+                MoveNextPhase();
             }
         }
 
