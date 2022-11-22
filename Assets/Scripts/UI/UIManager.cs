@@ -19,13 +19,19 @@ namespace Incorporation
         private VoidEventChannel _endTurnChannel;
 
         [SerializeField]
-        private TileEventChannel _tileClickChannel = default;
+        private TileEventChannel _tileClickChannel;
+
+        [SerializeField]
+        private VoidEventChannel _requestGameDataUpdateChannel;
 
         [SerializeField]
         private Canvas _canvas;
 
         [SerializeField]
-        private RectTransform _panel;
+        private RectTransform _tileDetailsPanel;
+
+        [SerializeField]
+        private RectTransform _playerDetailsPanel;
 
         private Button[] _buttons;
 
@@ -34,7 +40,7 @@ namespace Incorporation
         // Start is called before the first frame update
         void Start()
         {
-            _panel.gameObject.SetActive(false);
+            _tileDetailsPanel.gameObject.SetActive(false);
             _tileClickChannel.OnEventRaised += OpenDetailsPanel;
             _gameDataChannel.OnEventRaised += UpdateGameData;
             _buttons = _canvas.GetComponentsInChildren<Button>(includeInactive: true);
@@ -66,7 +72,13 @@ namespace Incorporation
                 return;
 
             UpdateEndTurnButton();
-            CloseDetailsPanel();
+            UpdatePlayerDetailsPanel();
+        }
+
+        private void UpdatePlayerDetailsPanel()
+        {
+            var text = _playerDetailsPanel.GetComponentsInChildren<TextMeshProUGUI>();
+            text.Where(t => t.name == "Money Data").First().text = _gameData.LocalPlayer.Money.ToString();
         }
 
         private void UpdateEndTurnButton()
@@ -74,30 +86,43 @@ namespace Incorporation
             _buttons.Where(b => b.name == "End Turn Button").First().gameObject.SetActive(_gameData.ActivePlayer.IsLocal);
         }
 
+        private void SetBuyButtonVisibility()
+        {
+            var buyButton = _buttons.Where(b => b.name == "Buy Button").First();
+            buyButton.gameObject.SetActive(false);
+            if (_currentTile.Owner.IsTheMarket)
+                buyButton.gameObject.SetActive(true);
+        }
+
         private void OpenDetailsPanel(Tile tile)
         {
             _currentTile = tile;
 
-            var buyButton = _buttons.Where(b => b.name == "Buy Button").First();
-            buyButton.gameObject.SetActive(false);
-            if (tile.Owner.IsTheMarket)
-                buyButton.gameObject.SetActive(true);
+            SetBuyButtonVisibility();
 
-            var text = _panel.GetComponentsInChildren<TextMeshProUGUI>();
+            var text = _tileDetailsPanel.GetComponentsInChildren<TextMeshProUGUI>();
             text.Where(t => t.name == "Tile Owner Data").First().text = tile.Owner.name;
 
-            _panel.gameObject.SetActive(true);
+            text.Where(t => t.name == "Tile Resource Data").First().text = tile.Resources[0].ToString();
+
+            _tileDetailsPanel.gameObject.SetActive(true);
         }
 
         public void CloseDetailsPanel()
         {
             _currentTile = null;
-            _panel.gameObject.SetActive(false);
+            _tileDetailsPanel.gameObject.SetActive(false);
         }
 
         public void OnBuyButtonPress()
         {
+            if (_gameData.ActivePlayer.TryMakePurchase(_currentTile.Price))
+            {
+                _currentTile.SetOwner(_gameData.ActivePlayer);
+                _requestGameDataUpdateChannel.RaiseEvent();
+            }
 
+            SetBuyButtonVisibility();
         }
     }
 }

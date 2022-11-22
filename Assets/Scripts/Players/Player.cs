@@ -1,5 +1,7 @@
 ﻿using Incorporation.Assets.ScriptableObjects;
 using Incorporation.Assets.ScriptableObjects.EventChannels;
+using Incorporation.Assets.Scripts.Resources;
+using System;
 using UnityEngine;
 
 namespace Incorporation.Assets.Scripts.Players
@@ -7,6 +9,10 @@ namespace Incorporation.Assets.Scripts.Players
     public class Player : MonoBehaviour
     {
         private GameData _gameData;
+
+        public bool IsMyTurn => _gameData.ActivePlayer == this;
+
+        private PlayerData _playerData;
         
         public virtual bool IsRemote => false;
 
@@ -14,35 +20,44 @@ namespace Incorporation.Assets.Scripts.Players
         
         public virtual bool IsTheMarket => false;
 
+        public virtual int StartingMoney => 10;
+
+        public virtual int Money => _playerData.Money;
+        public virtual int GetAvailableResourceQuantity(Resource resource) => _playerData.Resources.ContainsKey(resource) ? _playerData.Resources[resource] : 0;
+
         [SerializeField]
         private VoidEventChannel _endTurnEventChannel;
-
-        //[SerializeField]
-        //private GameStateEventChannel _gameStateEventChannel;
 
         [SerializeField]
         private GameDataEventChannel _gameDataEventChannel;
 
+        void Awake()
+        {
+            _playerData = GetComponent<PlayerData>();
+            _playerData.Money = StartingMoney;
+            _gameDataEventChannel.OnEventRaised += UpdateGameData;
+        }
+
         void Start()
         {
-            //_gameDataEventChannel.OnEventRaised += UpdateGameData;
         }
 
         void OnDestroy()
         {
-            //_gameDataEventChannel.OnEventRaised -= UpdateGameData;
+            _gameDataEventChannel.OnEventRaised -= UpdateGameData;
         }
 
-        //void UpdateGameData(GameData newGameData)
-        //{
-        //    _gameData = newGameData;
-        //    IsMyTurn = _gameData.ActivePlayer == this;
-        //}
+        public void UpdateGameData(GameData newGameData)
+        {
+            _gameData = newGameData;
+        }
 
-        //public void EndTurn()
-        //{
-        //    if (IsMyTurn)
-        //        _endTurnEventChannel.RaiseEvent();
-        //}
+        public bool TryMakePurchase(int price)
+        {
+            if (price > Money || !IsMyTurn) return false;
+
+            _playerData.Money -= price;
+            return true;
+        }
     }
 }

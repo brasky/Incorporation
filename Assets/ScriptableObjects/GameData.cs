@@ -17,6 +17,8 @@ namespace Incorporation.Assets.ScriptableObjects
     {
         public GameState State { get; set; }
 
+        public Player LocalPlayer { get; set; }
+
 #nullable enable
         public Player? ActivePlayer { get; set; }
 #nullable disable

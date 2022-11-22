@@ -21,6 +21,9 @@ namespace Incorporation
         private GameDataEventChannel _gameDataEventChannel;
 
         [SerializeField]
+        private VoidEventChannel _requestGameDataUpdateChannel;
+
+        [SerializeField]
         private Player playerPrefab;
 
         [SerializeField]
@@ -45,10 +48,15 @@ namespace Incorporation
         void Start()
         {
             _endTurnEventChannel.OnEventRaised += MoveNextPhase;
+            _requestGameDataUpdateChannel.OnEventRaised += SendGameData;
 
-            _gameDataEventChannel.RaiseEvent(_gameData);
-
+            SendGameData();
             MoveNextPhase();
+        }
+
+        void SendGameData()
+        {
+            _gameDataEventChannel.RaiseEvent(_gameData);
         }
 
         void SetupPlayers()
@@ -61,6 +69,8 @@ namespace Incorporation
             var local = Instantiate(playerPrefab);
             local.name = "Local Player";
             _players.Add(local);
+
+            _gameData.LocalPlayer = local;
 
             var theMarket = Instantiate(theMarketPrefab);
             theMarket.name = "The Market";

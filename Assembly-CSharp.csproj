@@ -70,6 +70,8 @@
     <Compile Include="Assets\ScriptableObjects\EventChannels\VoidEventChannel.cs" />
     <Compile Include="Assets\Scripts\TileGrid\Tile.cs" />
     <Compile Include="Assets\Scripts\Players\TheMarket.cs" />
+    <Compile Include="Assets\Scripts\Resources\Resource.cs" />
+    <Compile Include="Assets\Scripts\Players\PlayerData.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\TextMesh Pro\Shaders\TMPro.cginc" />

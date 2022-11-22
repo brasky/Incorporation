@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Incorporation.Assets.Scripts.Players
+﻿namespace Incorporation.Assets.Scripts.Players
 {
     public class TheMarket : Player
     {
@@ -14,5 +8,12 @@ namespace Incorporation.Assets.Scripts.Players
         
         public override bool IsRemote => false;
 
+        void Awake()
+        {
+        }
+
+        void Start()
+        {
+        }
     }
 }
