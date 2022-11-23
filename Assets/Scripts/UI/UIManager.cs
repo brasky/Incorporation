@@ -95,12 +95,21 @@ namespace Incorporation
             if (_currentTile.Owner.IsTheMarket)
                 buyButton.gameObject.SetActive(true);
         }
+        
+        private void SetImproveButtonVisibility()
+        {
+            var improveButton = _buttons.Where(b => b.name == "Improve Button").First();
+            improveButton.gameObject.SetActive(_gameData.LocalPlayer == _currentTile.Owner && !_currentTile.IsImproved);
+        }
 
         private void OpenDetailsPanel(Tile tile)
         {
-            _currentTile = tile;
+            CloseDetailsPanel();
 
+            _currentTile = tile;
+            _currentTile.SetDetailsPaneSelected();
             SetBuyButtonVisibility();
+            SetImproveButtonVisibility();
 
             var text = _tileDetailsPanel.GetComponentsInChildren<TextMeshProUGUI>();
             text.Where(t => t.name == "Tile Owner Data").First().text = tile.Owner.name;
@@ -109,13 +118,21 @@ namespace Incorporation
 
             text.Where(t => t.name == "Tile Yield Data").First().text = tile.Yield.ToString();
 
+            text.Where(t => t.name == "Tile IsImproved Data").First().text = tile.IsImproved.ToString();
+
+            text.Where(t => t.name == "Tile ResourceCost Data").First().text = tile.GetResourceCostsAsString();
+
             _tileDetailsPanel.gameObject.SetActive(true);
         }
 
         public void CloseDetailsPanel()
         {
-            _currentTile = null;
+            if (_currentTile is null)
+                return;
+
+            _currentTile.SetDetailsPaneDeselected();
             _tileDetailsPanel.gameObject.SetActive(false);
+            _currentTile = null;
         }
 
         public void OnBuyButtonPress()
@@ -127,7 +144,19 @@ namespace Incorporation
             }
 
             SetBuyButtonVisibility();
+            SetImproveButtonVisibility();
             OpenDetailsPanel(_currentTile);
+        }
+
+        public void OnImproveButtonPress()
+        {
+            if (_gameData.ActivePlayer.TryMakePurchase(_currentTile.ResourceCosts))
+            {
+                _currentTile.Improve();
+                SetImproveButtonVisibility();
+                OpenDetailsPanel(_currentTile);
+                UpdatePlayerDetailsPanel();
+            }
         }
     }
 }

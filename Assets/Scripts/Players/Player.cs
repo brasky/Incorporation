@@ -1,7 +1,6 @@
 ﻿using Incorporation.Assets.ScriptableObjects;
 using Incorporation.Assets.ScriptableObjects.EventChannels;
 using Incorporation.Assets.Scripts.Resources;
-using System;
 using UnityEngine;
 
 namespace Incorporation.Assets.Scripts.Players
@@ -19,7 +18,9 @@ namespace Incorporation.Assets.Scripts.Players
         public bool IsMyTurn => _gameData.ActivePlayer == this;
 
         private PlayerData _playerData;
-        
+
+        public virtual Color Color => new Color(0.07f, 0.666f, 0);
+
         public virtual bool IsRemote => false;
 
         public virtual bool IsLocal => !IsRemote;
@@ -67,6 +68,37 @@ namespace Incorporation.Assets.Scripts.Players
             if (price > Money) return false;
 
             _playerData.Money -= price;
+            return true;
+        }
+        
+        public bool TryMakePurchase(Resource resource, int quantity)
+        {
+            if (!_playerData.Resources.TryGetValue(resource, out int available))
+                return false;
+
+            if (quantity > available)
+                return false;
+
+            _playerData.Resources[resource] -= quantity;
+            return true;
+        }
+
+        public bool TryMakePurchase(ResourceCost[] resourceCosts)
+        {
+            foreach (var resourceCost in resourceCosts)
+            {
+                if (!_playerData.Resources.TryGetValue(resourceCost.Resource, out int available))
+                    return false;
+
+                if (resourceCost.Quantity > available)
+                    return false;
+            }
+
+            foreach(var resourceCost in resourceCosts)
+            {
+                _playerData.Resources[resourceCost.Resource] -= resourceCost.Quantity;
+            }
+
             return true;
         }
     }

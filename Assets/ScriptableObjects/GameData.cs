@@ -1,4 +1,5 @@
 ﻿using Incorporation.Assets.Scripts.Players;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Incorporation.Assets.ScriptableObjects
@@ -22,5 +23,7 @@ namespace Incorporation.Assets.ScriptableObjects
 #nullable enable
         public Player? ActivePlayer { get; set; }
 #nullable disable
+
+        public List<Player> Players { get; set; }
     }
 }

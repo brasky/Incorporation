@@ -59,8 +59,19 @@ namespace Incorporation
             _endTurnEventChannel.OnEventRaised += MoveNextPhase;
             _requestGameDataUpdateChannel.OnEventRaised += SendGameData;
 
+            GivePlayersStartingTiles();
+
             SendGameData();
             MoveNextPhase();
+        }
+
+        private void GivePlayersStartingTiles()
+        {
+            foreach(var player in _players.Where(p => !p.IsTheMarket))
+            {
+                var tile = gridManager.GetRandomUnownedTile();
+                tile.SetOwner(player);
+            }
         }
 
         void SendGameData()
@@ -92,6 +103,8 @@ namespace Incorporation
             }
 
             _players.Add(theMarket);
+
+            _gameData.Players = _players;
         }
 
         void MoveNextPhase()
@@ -124,12 +137,13 @@ namespace Incorporation
 
         private void GiveTileYieldsToActivePlayer()
         {
-            var ownedTiles = gridManager.GetTilesOwnedByPlayer(_gameData.ActivePlayer);
+            var ownedTiles = gridManager.GetTilesOwnedByPlayer(_gameData.ActivePlayer, includeUnimproved: true);
 
             foreach(Resource resource in Enum.GetValues(typeof(Resource)))
             {
-                var tiles = ownedTiles.Where(t => t.Resources.Any(r => r == resource)).ToArray();
-                _gameData.ActivePlayer.AddResource(resource, tiles.Sum(t => t.Yield));
+                var improvedResourceTiles = ownedTiles.Where(t => t.IsImproved && t.Resources.Any(r => r == resource)).ToArray();
+                var unimprovedResourceTiles = ownedTiles.Where(t => !t.IsImproved && t.Resources.Any(r => r == resource)).ToArray();
+                _gameData.ActivePlayer.AddResource(resource, (int)(improvedResourceTiles.Sum(t => Math.Ceiling(t.Yield * 1.5)) + unimprovedResourceTiles.Sum(t => t.Yield)));
             }
         }
 

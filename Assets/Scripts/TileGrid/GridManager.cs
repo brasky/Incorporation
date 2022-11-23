@@ -42,13 +42,13 @@ namespace Incorporation.Assets.Scripts.TileGrid
         {
             _tiles = new Tile[width * height];
 
-            for(int x = 0; x < width; x++)
+            for (int x = 0; x < width; x++)
             {
-                for( int y = 0; y < height; y++)
+                for (int y = 0; y < height; y++)
                 {
                     var tile = Instantiate(tilePrefab, new Vector3(x, y, 0), Quaternion.identity);
                     tile.SetOwner(_theMarket);
-                    _tiles[x*width+y] = tile;
+                    _tiles[x * width + y] = tile;
                 }
             }
 
@@ -56,9 +56,23 @@ namespace Incorporation.Assets.Scripts.TileGrid
             camera.transform.position = new Vector3((float)width / 2 - 0.5f, (float)width / 2 - 0.5f, -10);
         }
 
-        public Tile[] GetTilesOwnedByPlayer(Player player)
+        public Tile[] GetTilesOwnedByPlayer(Player player, bool includeUnimproved)
         {
-            return _tiles.Where(t => t.Owner == player).ToArray();
+            return _tiles.Where(t => t.Owner == player && (includeUnimproved || t.IsImproved)).ToArray();
+        }
+
+        public Tile GetRandomTile()
+        {
+            return _tiles[Random.Range(0, _tiles.Length)];
+        }
+
+        public Tile GetRandomUnownedTile()
+        {
+            var unownedTiles = _tiles.Where(t => t.Owner == _theMarket).ToArray();
+            if (unownedTiles.Length == 0)
+                return null;
+
+            return unownedTiles[Random.Range(0, unownedTiles.Length)];
         }
     }
 }

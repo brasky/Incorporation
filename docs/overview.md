@@ -4,7 +4,20 @@ The world is run by corporations which are competing to monopolize an industry. 
 
 # What is an industry?
 
-An industry could be something like the Real Estate or Energy markets. These markets consume a resource (land, oil, etc) and produce a product (office space, energy).
+An industry could be something like the Real Estate or Energy markets. These markets consume a commodity (metal, oil, water, etc) and produce a product (office space, energy).
+
+# What is the relationship between resources and products?
+
+A resource comes from a location/tile every turn. Players can refine it and create a product which is can be sold to/consumed by players.
+
+Examples:
+oil (resource from a tile) -> gets refined (which costs money and time) -> produces energy -> sold to/consumed by players
+
+
+
+Player A has control of oil and produces energy
+Player A is adjacent to Player B
+
 
 # What does the board look like?
 

@@ -8,14 +8,4 @@ namespace Incorporation.Assets.Scripts.Resources
         Wood,
         Oil
     }
-
-    //public class Resource : MonoBehaviour
-    //{
-    //    public Resources[] _resources;
-
-    //    public Resource()
-    //    {
-
-    //    }
-    //}
 }
