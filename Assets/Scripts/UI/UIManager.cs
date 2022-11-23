@@ -1,5 +1,6 @@
 using Incorporation.Assets.ScriptableObjects;
 using Incorporation.Assets.ScriptableObjects.EventChannels;
+using Incorporation.Assets.Scripts.Resources;
 using Incorporation.Assets.Scripts.TileGrid;
 using System.Linq;
 using TMPro;
@@ -37,7 +38,6 @@ namespace Incorporation
 
         private Tile _currentTile;
 
-        // Start is called before the first frame update
         void Start()
         {
             _tileDetailsPanel.gameObject.SetActive(false);
@@ -79,6 +79,8 @@ namespace Incorporation
         {
             var text = _playerDetailsPanel.GetComponentsInChildren<TextMeshProUGUI>();
             text.Where(t => t.name == "Money Data").First().text = _gameData.LocalPlayer.Money.ToString();
+            text.Where(t => t.name == "Wood Data").First().text = _gameData.LocalPlayer.GetAvailableResourceQuantity(Resource.Wood).ToString();
+            text.Where(t => t.name == "Oil Data").First().text = _gameData.LocalPlayer.GetAvailableResourceQuantity(Resource.Oil).ToString();
         }
 
         private void UpdateEndTurnButton()
@@ -105,6 +107,8 @@ namespace Incorporation
 
             text.Where(t => t.name == "Tile Resource Data").First().text = tile.Resources[0].ToString();
 
+            text.Where(t => t.name == "Tile Yield Data").First().text = tile.Yield.ToString();
+
             _tileDetailsPanel.gameObject.SetActive(true);
         }
 
@@ -123,6 +127,7 @@ namespace Incorporation
             }
 
             SetBuyButtonVisibility();
+            OpenDetailsPanel(_currentTile);
         }
     }
 }

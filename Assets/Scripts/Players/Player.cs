@@ -10,6 +10,12 @@ namespace Incorporation.Assets.Scripts.Players
     {
         private GameData _gameData;
 
+        [SerializeField]
+        private VoidEventChannel _endTurnEventChannel;
+
+        [SerializeField]
+        private GameDataEventChannel _gameDataEventChannel;
+
         public bool IsMyTurn => _gameData.ActivePlayer == this;
 
         private PlayerData _playerData;
@@ -22,14 +28,9 @@ namespace Incorporation.Assets.Scripts.Players
 
         public virtual int StartingMoney => 10;
 
+        public virtual int Income => 0;
+
         public virtual int Money => _playerData.Money;
-        public virtual int GetAvailableResourceQuantity(Resource resource) => _playerData.Resources.ContainsKey(resource) ? _playerData.Resources[resource] : 0;
-
-        [SerializeField]
-        private VoidEventChannel _endTurnEventChannel;
-
-        [SerializeField]
-        private GameDataEventChannel _gameDataEventChannel;
 
         void Awake()
         {
@@ -38,13 +39,22 @@ namespace Incorporation.Assets.Scripts.Players
             _gameDataEventChannel.OnEventRaised += UpdateGameData;
         }
 
-        void Start()
-        {
-        }
-
         void OnDestroy()
         {
             _gameDataEventChannel.OnEventRaised -= UpdateGameData;
+        }
+
+        public virtual int GetAvailableResourceQuantity(Resource resource) => _playerData.Resources.ContainsKey(resource) ? _playerData.Resources[resource] : 0;
+        
+        public virtual void AddResource(Resource resource, int quantity)
+        {
+            if (!_playerData.Resources.TryAdd(resource, quantity))
+                _playerData.Resources[resource] += quantity;
+        }
+
+        public virtual void ReceiveMoney(int quantity)
+        {
+            _playerData.Money += quantity;
         }
 
         public void UpdateGameData(GameData newGameData)
@@ -54,7 +64,7 @@ namespace Incorporation.Assets.Scripts.Players
 
         public bool TryMakePurchase(int price)
         {
-            if (price > Money || !IsMyTurn) return false;
+            if (price > Money) return false;
 
             _playerData.Money -= price;
             return true;

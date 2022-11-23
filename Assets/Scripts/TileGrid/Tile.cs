@@ -15,8 +15,12 @@ namespace Incorporation.Assets.Scripts.TileGrid
         [SerializeField]
         private TileEventChannel _tileClickEventChannel;
 
+        [SerializeField]
+        private int maxPossibleYield = 10;
+
         public Player Owner => _tileData.Owner;
         public Resource[] Resources => _tileData.Resources;
+        public int Yield { get; private set; }
         public int Price => _tileData.Price;
 
         // Start is called before the first frame update
@@ -27,6 +31,8 @@ namespace Incorporation.Assets.Scripts.TileGrid
 
             var randomResource = UnityEngine.Random.Range(0, Enum.GetNames(typeof(Resource)).Length);
             _tileData.Resources = new Resource[1] { (Resource)randomResource };
+
+            Yield = UnityEngine.Random.Range(1, maxPossibleYield);
 
             var text = GetComponentInChildren<TextMeshProUGUI>();
             text.text = Resources[0].ToString();

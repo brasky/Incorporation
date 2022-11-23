@@ -1,8 +1,12 @@
 using Incorporation.Assets.ScriptableObjects;
 using Incorporation.Assets.ScriptableObjects.EventChannels;
 using Incorporation.Assets.Scripts.Players;
+using Incorporation.Assets.Scripts.Resources;
+using Incorporation.Assets.Scripts.TileGrid;
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace Incorporation
@@ -13,6 +17,9 @@ namespace Incorporation
 
         [SerializeField]
         private int _numberOfPlayers;
+
+        [SerializeField] 
+        private int _baseIncome;
 
         [SerializeField]
         private VoidEventChannel _endTurnEventChannel;
@@ -32,6 +39,9 @@ namespace Incorporation
         [SerializeField]
         private RemotePlayer remotePlayerPrefab;
 
+        [SerializeField]
+        private GridManager gridManager;
+
         private readonly List<Player> _players = new();
 
         private int turnCount = -1;
@@ -44,7 +54,6 @@ namespace Incorporation
             SetupPlayers();
         }
 
-        // Start is called before the first frame update
         void Start()
         {
             _endTurnEventChannel.OnEventRaised += MoveNextPhase;
@@ -97,10 +106,31 @@ namespace Incorporation
             {
                 _gameData.State = _gameData.ActivePlayer.IsRemote ? GameState.REMOTEPLAYERTURN : GameState.LOCALPLAYERTURN;
                 _haveStartedPollingForRemotePlayer = false;
+            }
 
+            if (_gameData.State == GameState.LOCALPLAYERTURN)
+            {
+                GiveIncomeToActivePlayer();
+                GiveTileYieldsToActivePlayer();
             }
 
             _gameDataEventChannel.RaiseEvent(_gameData);
+        }
+
+        private void GiveIncomeToActivePlayer()
+        {
+            _gameData.ActivePlayer.ReceiveMoney(_gameData.ActivePlayer.Income + _baseIncome);
+        }
+
+        private void GiveTileYieldsToActivePlayer()
+        {
+            var ownedTiles = gridManager.GetTilesOwnedByPlayer(_gameData.ActivePlayer);
+
+            foreach(Resource resource in Enum.GetValues(typeof(Resource)))
+            {
+                var tiles = ownedTiles.Where(t => t.Resources.Any(r => r == resource)).ToArray();
+                _gameData.ActivePlayer.AddResource(resource, tiles.Sum(t => t.Yield));
+            }
         }
 
         // Update is called once per frame
@@ -122,10 +152,6 @@ namespace Incorporation
         {
             //Wait for remote player to end their turn
             Debug.Log("Waiting for remote player...");
-
-            yield return new WaitForSeconds(1f);
-
-            Debug.Log("Still waiting for remote player...");
             
             yield return new WaitForSeconds(1f);
 
