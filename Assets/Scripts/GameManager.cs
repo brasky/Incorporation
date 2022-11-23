@@ -1,10 +1,12 @@
 using Incorporation.Assets.ScriptableObjects;
 using Incorporation.Assets.ScriptableObjects.EventChannels;
-using Incorporation.Assets.Scripts.Player;
+using Incorporation.Assets.Scripts.Players;
+using Incorporation.Assets.Scripts.Resources;
+using Incorporation.Assets.Scripts.TileGrid;
+using System;
 using System.Collections;
 using System.Collections.Generic;
-using Unity.Collections;
-using Unity.Jobs;
+using System.Linq;
 using UnityEngine;
 
 namespace Incorporation
@@ -16,6 +18,9 @@ namespace Incorporation
         [SerializeField]
         private int _numberOfPlayers;
 
+        [SerializeField] 
+        private int _baseIncome;
+
         [SerializeField]
         private VoidEventChannel _endTurnEventChannel;
 
@@ -23,10 +28,19 @@ namespace Incorporation
         private GameDataEventChannel _gameDataEventChannel;
 
         [SerializeField]
+        private VoidEventChannel _requestGameDataUpdateChannel;
+
+        [SerializeField]
         private Player playerPrefab;
 
         [SerializeField]
+        private Player theMarketPrefab;
+
+        [SerializeField]
         private RemotePlayer remotePlayerPrefab;
+
+        [SerializeField]
+        private GridManager gridManager;
 
         private readonly List<Player> _players = new();
 
@@ -40,14 +54,18 @@ namespace Incorporation
             SetupPlayers();
         }
 
-        // Start is called before the first frame update
         void Start()
         {
             _endTurnEventChannel.OnEventRaised += MoveNextPhase;
+            _requestGameDataUpdateChannel.OnEventRaised += SendGameData;
 
-            _gameDataEventChannel.RaiseEvent(_gameData);
-
+            SendGameData();
             MoveNextPhase();
+        }
+
+        void SendGameData()
+        {
+            _gameDataEventChannel.RaiseEvent(_gameData);
         }
 
         void SetupPlayers()
@@ -58,8 +76,13 @@ namespace Incorporation
             }
 
             var local = Instantiate(playerPrefab);
-            local.name = $"Local Player";
+            local.name = "Local Player";
             _players.Add(local);
+
+            _gameData.LocalPlayer = local;
+
+            var theMarket = Instantiate(theMarketPrefab);
+            theMarket.name = "The Market";
 
             for (int i = 1; i < _numberOfPlayers; i++)
             {
@@ -67,15 +90,47 @@ namespace Incorporation
                 remote.name = $"Remote Player {i}";
                 _players.Add(remote);
             }
+
+            _players.Add(theMarket);
         }
 
         void MoveNextPhase()
         {
             turnCount++;
             _gameData.ActivePlayer = _players[turnCount % _numberOfPlayers];
-            _gameData.State = _gameData.ActivePlayer.IsRemote ? GameState.REMOTEPLAYERTURN : GameState.LOCALPLAYERTURN;
-            _haveStartedPollingForRemotePlayer = false;
+            if (_gameData.ActivePlayer.IsTheMarket)
+            {
+                _gameData.State = GameState.MARKETTURN;
+            }
+            else
+            {
+                _gameData.State = _gameData.ActivePlayer.IsRemote ? GameState.REMOTEPLAYERTURN : GameState.LOCALPLAYERTURN;
+                _haveStartedPollingForRemotePlayer = false;
+            }
+
+            if (_gameData.State == GameState.LOCALPLAYERTURN)
+            {
+                GiveIncomeToActivePlayer();
+                GiveTileYieldsToActivePlayer();
+            }
+
             _gameDataEventChannel.RaiseEvent(_gameData);
+        }
+
+        private void GiveIncomeToActivePlayer()
+        {
+            _gameData.ActivePlayer.ReceiveMoney(_gameData.ActivePlayer.Income + _baseIncome);
+        }
+
+        private void GiveTileYieldsToActivePlayer()
+        {
+            var ownedTiles = gridManager.GetTilesOwnedByPlayer(_gameData.ActivePlayer);
+
+            foreach(Resource resource in Enum.GetValues(typeof(Resource)))
+            {
+                var tiles = ownedTiles.Where(t => t.Resources.Any(r => r == resource)).ToArray();
+                _gameData.ActivePlayer.AddResource(resource, tiles.Sum(t => t.Yield));
+            }
         }
 
         // Update is called once per frame
@@ -86,16 +141,17 @@ namespace Incorporation
                 _haveStartedPollingForRemotePlayer = true;
                 StartCoroutine(WaitForRemotePlayer());
             }
+
+            if (_gameData.State == GameState.MARKETTURN)
+            {
+                MoveNextPhase();
+            }
         }
 
         IEnumerator WaitForRemotePlayer()
         {
             //Wait for remote player to end their turn
             Debug.Log("Waiting for remote player...");
-
-            yield return new WaitForSeconds(1f);
-
-            Debug.Log("Still waiting for remote player...");
             
             yield return new WaitForSeconds(1f);
 

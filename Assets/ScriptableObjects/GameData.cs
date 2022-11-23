@@ -1,4 +1,4 @@
-﻿using Incorporation.Assets.Scripts.Player;
+﻿using Incorporation.Assets.Scripts.Players;
 using UnityEngine;
 
 namespace Incorporation.Assets.ScriptableObjects
@@ -8,6 +8,7 @@ namespace Incorporation.Assets.ScriptableObjects
         SETUP,
         LOCALPLAYERTURN,
         REMOTEPLAYERTURN,
+        MARKETTURN,
         WON,
         LOST
     }
@@ -15,6 +16,8 @@ namespace Incorporation.Assets.ScriptableObjects
     public class GameData : ScriptableObject
     {
         public GameState State { get; set; }
+
+        public Player LocalPlayer { get; set; }
 
 #nullable enable
         public Player? ActivePlayer { get; set; }
