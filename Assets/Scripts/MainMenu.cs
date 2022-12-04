@@ -7,9 +7,16 @@ namespace Incorporation
 {
     public class MainMenu : MonoBehaviour
     {
+        private void Start()
+        {
+            SignalRClient.Connect();
+            Debug.Log("Opening Menu");
+
+        }
         public void NewGame()
         {
-            SceneManager.LoadScene("GameScene");
+            SignalRClient.CreateLobby();
+            //SceneManager.LoadScene("GameScene");
         }
         public void JoinGame()
         {

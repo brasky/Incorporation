@@ -57,16 +57,17 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\ScriptableObjects\EventChannels\TileEventChannel.cs" />
+    <Compile Include="Assets\Scripts\MainMenu.cs" />
     <Compile Include="Assets\ScriptableObjects\SerializableScriptObject.cs" />
     <Compile Include="Assets\Scripts\Players\PlayerData.cs" />
-    <Compile Include="Assets\Scripts\Resources\ResourceCost.cs" />
     <Compile Include="Assets\Scripts\TileGrid\GridManager.cs" />
     <Compile Include="Assets\ScriptableObjects\EventChannels\GameDataEventChannel.cs" />
     <Compile Include="Assets\ScriptableObjects\TextData.cs" />
     <Compile Include="Assets\Scripts\Players\RemotePlayer.cs" />
     <Compile Include="Assets\Scripts\GameManager.cs" />
-    <Compile Include="Assets\Scripts\TileGrid\TileData.cs" />
     <Compile Include="Assets\Scripts\Resources\Resource.cs" />
+    <Compile Include="Assets\Scripts\Resources\ResourceCost.cs" />
+    <Compile Include="Assets\Scripts\TileGrid\TileData.cs" />
     <Compile Include="Assets\Scripts\SignalRClient.cs" />
     <Compile Include="Assets\Scripts\Players\TheMarket.cs" />
     <Compile Include="Assets\ScriptableObjects\GameData.cs" />
@@ -74,7 +75,8 @@
     <Compile Include="Assets\Scripts\Players\Player.cs" />
     <Compile Include="Assets\ScriptableObjects\EventChannels\VoidEventChannel.cs" />
     <Compile Include="Assets\Scripts\TileGrid\Tile.cs" />
-    <Compile Include="Assets\MainMenu.cs" />
+    <Compile Include="Assets\ScriptableObjects\Lobby.cs" />
+    <Compile Include="Assets\Scripts\ServerState.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\TextMesh Pro\Shaders\TMPro.cginc" />
