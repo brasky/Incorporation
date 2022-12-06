@@ -1,11 +1,8 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEditor.MemoryProfiler;
 using UnityEngine;
 using BestHTTP.SignalRCore;
 using BestHTTP.SignalRCore.Encoders;
-using Incorporation.Assets.ScriptableObjects.EventChannels;
+using Shared;
 
 namespace Incorporation
 {
