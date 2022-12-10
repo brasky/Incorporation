@@ -1,0 +1,9 @@
+{
+	"name": "GameClient",
+	"references": [
+		"Unity.TextMeshPro",
+		"BestHTTP",
+		"Shared"
+	],
+	"autoReferenced": true
+}

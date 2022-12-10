@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.SignalR;
-using Server.Game;
+using Shared;
 
 namespace Server.Hubs
 {
@@ -14,7 +14,7 @@ namespace Server.Hubs
         public async Task CreateLobby()
         {
             string uuid = Guid.NewGuid().ToString();
-            ServerState.Player player = new(Context.ConnectionId);
+            Player player = new(Context.ConnectionId);
             games[uuid] = new ServerState(uuid, player);
             await Groups.AddToGroupAsync(Context.ConnectionId, uuid);
             await RefreshGameState(uuid);
