@@ -7,6 +7,8 @@ namespace Incorporation.Assets.ScriptableObjects
 {
     public class GameData : ScriptableObject
     {
+        public string Id { get; set; }
+
         public GameState State { get; set; }
 
         public Player LocalPlayer { get; set; }

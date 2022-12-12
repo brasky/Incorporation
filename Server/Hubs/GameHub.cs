@@ -22,12 +22,6 @@ namespace Server.Hubs
             return base.OnConnectedAsync();
         }
 
-        private Task RefreshGameState(string groupId)
-        {
-            logger.LogInformation($"Refresh requested: {groupId}");
-            return SendGameState(groupId, nameof(RefreshGameState));
-        }
-        
         private Task NewLobbyCreated(string groupId)
         {
             logger.LogInformation($"New lobby created {groupId}");
@@ -56,7 +50,18 @@ namespace Server.Hubs
         {
             logger.LogInformation($"Player requested game state: {Context.ConnectionId}");
             var game = games.Values.Where(s => s.Players.Any(p => p.Id == Context.ConnectionId)).First();
-            await RefreshGameState(game.Id);
+            logger.LogInformation($"Returning state for game {game.Id}");
+            await Clients.Caller.SendAsync("RefreshGameState", game);
+        }
+
+        public async Task JoinGame(string Id) 
+        {
+            logger.LogInformation($"player {Context.ConnectionId} is joining game {Id}");
+            if (!games.TryGetValue(Id, out var game)) return;
+            game.Players.Add(new PlayerData(Context.ConnectionId));
+
+            //Need to tell caller their connection id.
+            await Clients.Caller.SendAsync("JoinedGame", Context.ConnectionId);
         }
     }
 

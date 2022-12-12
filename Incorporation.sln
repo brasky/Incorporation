@@ -7,6 +7,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameClient", "GameClient.cs
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shared", "Shared.csproj", "{45845237-F52D-EB4F-CDF0-5E3DC6A25A3E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Assembly-CSharp", "Assembly-CSharp.csproj", "{248FB39A-966C-D792-2B91-23584E3DC273}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ParrelSync", "ParrelSync.csproj", "{CB3416B2-A3E4-9587-21BF-C18FF715A23F}"
+EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{AB52D272-93C4-49C1-B723-B25C3562393B}"
 	ProjectSection(SolutionItems) = preProject
 		docs\overview.md = docs\overview.md
@@ -39,6 +43,14 @@ Global
 		{45845237-F52D-EB4F-CDF0-5E3DC6A25A3E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{45845237-F52D-EB4F-CDF0-5E3DC6A25A3E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{45845237-F52D-EB4F-CDF0-5E3DC6A25A3E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{248FB39A-966C-D792-2B91-23584E3DC273}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{248FB39A-966C-D792-2B91-23584E3DC273}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{248FB39A-966C-D792-2B91-23584E3DC273}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{248FB39A-966C-D792-2B91-23584E3DC273}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CB3416B2-A3E4-9587-21BF-C18FF715A23F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CB3416B2-A3E4-9587-21BF-C18FF715A23F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CB3416B2-A3E4-9587-21BF-C18FF715A23F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CB3416B2-A3E4-9587-21BF-C18FF715A23F}.Release|Any CPU.Build.0 = Release|Any CPU
 		{FEFD74DA-E626-4A3A-BD67-D1FF980B21E3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{FEFD74DA-E626-4A3A-BD67-D1FF980B21E3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FEFD74DA-E626-4A3A-BD67-D1FF980B21E3}.Release|Any CPU.ActiveCfg = Release|Any CPU

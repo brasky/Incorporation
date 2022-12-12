@@ -10,13 +10,19 @@ namespace Incorporation
     {
         private static readonly Uri uri = new ("https://localhost:7021/game");
         public static readonly HubConnection Hub = new (uri, new JsonProtocol(new LitJsonEncoder()));
-        public static string LobbyId => ServerState.Id;
-        public static string LocalPlayerId { get; private set; }
+        public static string LocalPlayerId { get; private set; } = string.Empty;
         private static ServerState ServerState;
         public static event EventHandler<ServerState> OnServerStateUpdate;
 
         static SignalRClient()
         {
+            Hub.On<string>("JoinedGame", (localPlayerId) =>
+            {
+                Debug.Log($"Joined game as {localPlayerId}");
+                LocalPlayerId = localPlayerId;
+                RequestGameState();
+            });
+
             Hub.On<ServerState>("RefreshGameState", (serverState) =>
             {
                 Debug.Log("Refreshing Game State...");
@@ -52,6 +58,16 @@ namespace Incorporation
         public static void RequestGameState()
         {
             Hub.Send("RequestGameState");
+        }
+
+        public static void JoinGame(string id)
+        {
+            Hub.Send("JoinGame", id);
+        }
+
+        public static void Disconnect()
+        {
+            Hub.CloseAsync();
         }
     }
 }

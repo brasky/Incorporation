@@ -1,5 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -9,6 +8,7 @@ namespace Incorporation
     {
         private void Start()
         {
+            Application.runInBackground = true;
             SignalRClient.Connect();
         }
 
@@ -21,7 +21,10 @@ namespace Incorporation
 
         public void JoinGame()
         {
-            Debug.Log("Joining game...");
+            var input = FindObjectOfType<TMP_InputField>();
+            Debug.Log($"Joining game: {input.text}");
+            SignalRClient.JoinGame(input.text);
+            SceneManager.LoadScene("LobbyScene");
         }
 
         public void Quit()
