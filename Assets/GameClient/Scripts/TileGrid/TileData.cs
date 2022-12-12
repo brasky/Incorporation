@@ -1,6 +1,6 @@
 using UnityEngine;
 using Incorporation.Assets.Scripts.Players;
-using Incorporation.Assets.Scripts.Resources;
+using Shared.Resources;
 
 namespace Incorporation.Assets.Scripts.TileGrid
 {

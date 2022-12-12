@@ -1,8 +1,9 @@
 using Incorporation.Assets.ScriptableObjects;
 using Incorporation.Assets.ScriptableObjects.EventChannels;
 using Incorporation.Assets.Scripts.Players;
-using Incorporation.Assets.Scripts.Resources;
 using Incorporation.Assets.Scripts.TileGrid;
+using Shared;
+using Shared.Resources;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -49,9 +50,24 @@ namespace Incorporation
 
         void Awake()
         {
+            SignalRClient.OnServerStateUpdate += UpdateServerState;
             _gameData = ScriptableObject.CreateInstance<GameData>();
             _gameData.State = GameState.SETUP;
             SetupPlayers();
+        }
+
+        private void UpdateServerState(object _, ServerState serverState)
+        {
+            Debug.Log("Received ServerState Update");
+            _gameData.State = serverState.State;
+            foreach(var player in _gameData.Players)
+            {
+                var newData = serverState.Players.Where(p => p.Id == player.Id).First();
+
+                player.PlayerData = newData;
+            }
+
+            SendGameData();
         }
 
         void Start()
@@ -59,15 +75,15 @@ namespace Incorporation
             _endTurnEventChannel.OnEventRaised += MoveNextPhase;
             _requestGameDataUpdateChannel.OnEventRaised += SendGameData;
 
-            GivePlayersStartingTiles();
+            //GivePlayersStartingTiles();
 
             SendGameData();
-            MoveNextPhase();
+            //MoveNextPhase();
         }
 
         private void GivePlayersStartingTiles()
         {
-            foreach(var player in _players.Where(p => !p.IsTheMarket))
+            foreach(var player in _players)
             {
                 var tile = gridManager.GetRandomUnownedTile();
                 tile.SetOwner(player);
@@ -109,43 +125,43 @@ namespace Incorporation
 
         void MoveNextPhase()
         {
-            turnCount++;
-            _gameData.ActivePlayer = _players[turnCount % _numberOfPlayers];
-            if (_gameData.ActivePlayer.IsTheMarket)
-            {
-                _gameData.State = GameState.MARKETTURN;
-            }
-            else
-            {
-                _gameData.State = _gameData.ActivePlayer.IsRemote ? GameState.REMOTEPLAYERTURN : GameState.LOCALPLAYERTURN;
-                _haveStartedPollingForRemotePlayer = false;
-            }
+            //turnCount++;
+            //_gameData.ActivePlayer = _players[turnCount % _numberOfPlayers];
+            //if (_gameData.ActivePlayer.IsTheMarket)
+            //{
+            //    _gameData.State = GameState.MARKETTURN;
+            //}
+            //else
+            //{
+            //    _gameData.State = _gameData.ActivePlayer.IsRemote ? GameState.REMOTEPLAYERTURN : GameState.LOCALPLAYERTURN;
+            //    _haveStartedPollingForRemotePlayer = false;
+            //}
 
-            if (_gameData.State == GameState.LOCALPLAYERTURN)
-            {
-                GiveIncomeToActivePlayer();
-                GiveTileYieldsToActivePlayer();
-            }
+            //if (_gameData.State == GameState.LOCALPLAYERTURN)
+            //{
+            //    GiveIncomeToActivePlayer();
+            //    GiveTileYieldsToActivePlayer();
+            //}
 
             _gameDataEventChannel.RaiseEvent(_gameData);
         }
 
-        private void GiveIncomeToActivePlayer()
-        {
-            _gameData.ActivePlayer.ReceiveMoney(_gameData.ActivePlayer.Income + _baseIncome);
-        }
+        //private void GiveIncomeToActivePlayer()
+        //{
+        //    _gameData.ActivePlayer.ReceiveMoney(_gameData.ActivePlayer.Income + _baseIncome);
+        //}
 
-        private void GiveTileYieldsToActivePlayer()
-        {
-            var ownedTiles = gridManager.GetTilesOwnedByPlayer(_gameData.ActivePlayer, includeUnimproved: true);
+        //private void GiveTileYieldsToActivePlayer()
+        //{
+        //    var ownedTiles = gridManager.GetTilesOwnedByPlayer(_gameData.ActivePlayer, includeUnimproved: true);
 
-            foreach(Resource resource in Enum.GetValues(typeof(Resource)))
-            {
-                var improvedResourceTiles = ownedTiles.Where(t => t.IsImproved && t.Resources.Any(r => r == resource)).ToArray();
-                var unimprovedResourceTiles = ownedTiles.Where(t => !t.IsImproved && t.Resources.Any(r => r == resource)).ToArray();
-                _gameData.ActivePlayer.AddResource(resource, (int)(improvedResourceTiles.Sum(t => Math.Ceiling(t.Yield * 1.5)) + unimprovedResourceTiles.Sum(t => t.Yield)));
-            }
-        }
+        //    foreach(Resource resource in Enum.GetValues(typeof(Resource)))
+        //    {
+        //        var improvedResourceTiles = ownedTiles.Where(t => t.IsImproved && t.Resources.Any(r => r == resource)).ToArray();
+        //        var unimprovedResourceTiles = ownedTiles.Where(t => !t.IsImproved && t.Resources.Any(r => r == resource)).ToArray();
+        //        _gameData.ActivePlayer.AddResource(resource, (int)(improvedResourceTiles.Sum(t => Math.Ceiling(t.Yield * 1.5)) + unimprovedResourceTiles.Sum(t => t.Yield)));
+        //    }
+        //}
 
         // Update is called once per frame
         void Update()

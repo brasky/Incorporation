@@ -57,25 +57,23 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\GameClient\ScriptableObjects\EventChannels\TileEventChannel.cs" />
+    <Compile Include="Assets\GameClient\Scripts\MainMenu.cs" />
     <Compile Include="Assets\GameClient\ScriptableObjects\SerializableScriptObject.cs" />
+    <Compile Include="Assets\GameClient\Scripts\Lobby.cs" />
     <Compile Include="Assets\GameClient\Scripts\TileGrid\GridManager.cs" />
     <Compile Include="Assets\GameClient\ScriptableObjects\EventChannels\GameDataEventChannel.cs" />
     <Compile Include="Assets\GameClient\ScriptableObjects\TextData.cs" />
     <Compile Include="Assets\GameClient\Scripts\Players\RemotePlayer.cs" />
     <Compile Include="Assets\GameClient\Scripts\GameManager.cs" />
     <Compile Include="Assets\GameClient\Scripts\TileGrid\TileData.cs" />
+    <Compile Include="Assets\GameClient\Scripts\SignalRClient.cs" />
+    <Compile Include="Assets\GameClient\Scripts\Players\TheMarket.cs" />
     <Compile Include="Assets\GameClient\ScriptableObjects\GameData.cs" />
+    <Compile Include="Assets\GameClient\ScriptableObjects\Lobby.cs" />
     <Compile Include="Assets\GameClient\Scripts\UI\UIManager.cs" />
     <Compile Include="Assets\GameClient\Scripts\Players\Player.cs" />
     <Compile Include="Assets\GameClient\ScriptableObjects\EventChannels\VoidEventChannel.cs" />
     <Compile Include="Assets\GameClient\Scripts\TileGrid\Tile.cs" />
-    <Compile Include="Assets\GameClient\Scripts\Players\TheMarket.cs" />
-    <Compile Include="Assets\GameClient\Scripts\Resources\Resource.cs" />
-    <Compile Include="Assets\GameClient\Scripts\Players\PlayerData.cs" />
-    <Compile Include="Assets\GameClient\Scripts\Resources\ResourceCost.cs" />
-    <Compile Include="Assets\GameClient\ScriptableObjects\Lobby.cs" />
-    <Compile Include="Assets\GameClient\Scripts\MainMenu.cs" />
-    <Compile Include="Assets\GameClient\Scripts\SignalRClient.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\GameClient\TextMesh Pro\Shaders\TMPro.cginc" />

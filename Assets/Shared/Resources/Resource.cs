@@ -1,7 +1,6 @@
 ﻿using System;
-using UnityEngine;
 
-namespace Incorporation.Assets.Scripts.Resources
+namespace Shared.Resources
 {
     public enum Resource
     {

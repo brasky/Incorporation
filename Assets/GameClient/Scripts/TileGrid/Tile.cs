@@ -1,6 +1,6 @@
 using Incorporation.Assets.ScriptableObjects.EventChannels;
 using Incorporation.Assets.Scripts.Players;
-using Incorporation.Assets.Scripts.Resources;
+using Shared.Resources;
 using System;
 using System.Text;
 using TMPro;

@@ -10,18 +10,20 @@ namespace Incorporation
         private void Start()
         {
             SignalRClient.Connect();
-            Debug.Log("Opening Menu");
-
         }
+
         public void NewGame()
         {
             SignalRClient.CreateLobby();
-            //SceneManager.LoadScene("GameScene");
+            SceneManager.LoadScene("LobbyScene");
+
         }
+
         public void JoinGame()
         {
             Debug.Log("Joining game...");
         }
+
         public void Quit()
         {
             Debug.Log("Exiting application...");

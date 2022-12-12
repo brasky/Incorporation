@@ -9,33 +9,49 @@ namespace Incorporation
     public static class SignalRClient
     {
         private static readonly Uri uri = new ("https://localhost:7021/game");
-        public static readonly HubConnection hub = new (uri, new JsonProtocol(new LitJsonEncoder()));
-        public static string LobbyId { get; set; }
-        public static ServerState serverState;
+        public static readonly HubConnection Hub = new (uri, new JsonProtocol(new LitJsonEncoder()));
+        public static string LobbyId => ServerState.Id;
+        public static string LocalPlayerId { get; private set; }
+        private static ServerState ServerState;
+        public static event EventHandler<ServerState> OnServerStateUpdate;
 
         static SignalRClient()
         {
-            hub.On<ServerState>("RefreshGameState", (serverState) =>
+            Hub.On<ServerState>("RefreshGameState", (serverState) =>
             {
                 Debug.Log("Refreshing Game State...");
-                Debug.Log(serverState.ToString());
-                SignalRClient.serverState = serverState;
+                ServerState = serverState;
+                OnServerStateUpdate?.Invoke(null, ServerState);
+            });
+
+            Hub.On<ServerState>("NewLobbyCreated", (serverState) =>
+            {
+                Debug.Log("New Lobby Created...");
+                Debug.Log(serverState.Id);
+                ServerState = serverState;
+                LocalPlayerId = serverState.Players[0].Id;
+                OnServerStateUpdate?.Invoke(null, ServerState);
             });
         }
 
         public static void Connect()
         {
-            if (hub.State == ConnectionStates.Initial || hub.State == ConnectionStates.Redirected)
+            if (Hub.State == ConnectionStates.Initial || Hub.State == ConnectionStates.Redirected)
             {
                 Debug.Log("Connecting...");
-                hub.ConnectAsync();
+                Hub.ConnectAsync();
             }
         }
 
         public static void CreateLobby()
         {
             Debug.Log("Creating Lobby...");
-            hub.Send("CreateLobby");
+            Hub.Send("CreateLobby");
+        }
+
+        public static void RequestGameState()
+        {
+            Hub.Send("RequestGameState");
         }
     }
 }

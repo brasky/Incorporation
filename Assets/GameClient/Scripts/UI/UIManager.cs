@@ -1,7 +1,8 @@
 using Incorporation.Assets.ScriptableObjects;
 using Incorporation.Assets.ScriptableObjects.EventChannels;
-using Incorporation.Assets.Scripts.Resources;
 using Incorporation.Assets.Scripts.TileGrid;
+using Shared;
+using Shared.Resources;
 using System.Linq;
 using TMPro;
 using UnityEngine;
@@ -60,7 +61,7 @@ namespace Incorporation
 
         public void EndTurnButtonPress()
         {
-            if (_gameData.ActivePlayer.IsLocal)
+            if (_gameData.ActivePlayer.Id == SignalRClient.LocalPlayerId)
                 _endTurnChannel.RaiseEvent();
         }
 
@@ -78,21 +79,21 @@ namespace Incorporation
         private void UpdatePlayerDetailsPanel()
         {
             var text = _playerDetailsPanel.GetComponentsInChildren<TextMeshProUGUI>();
-            text.Where(t => t.name == "Money Data").First().text = _gameData.LocalPlayer.Money.ToString();
-            text.Where(t => t.name == "Wood Data").First().text = _gameData.LocalPlayer.GetAvailableResourceQuantity(Resource.Wood).ToString();
-            text.Where(t => t.name == "Oil Data").First().text = _gameData.LocalPlayer.GetAvailableResourceQuantity(Resource.Oil).ToString();
+            text.Where(t => t.name == "Money Data").First().text = _gameData.LocalPlayer.PlayerData.Money.ToString();
+            //text.Where(t => t.name == "Wood Data").First().text = _gameData.LocalPlayer.PlayerData.GetAvailableResourceQuantity(Resource.Wood).ToString();
+            //text.Where(t => t.name == "Oil Data").First().text = _gameData.LocalPlayer.PlayerData.GetAvailableResourceQuantity(Resource.Oil).ToString();
         }
 
         private void UpdateEndTurnButton()
         {
-            _buttons.Where(b => b.name == "End Turn Button").First().gameObject.SetActive(_gameData.ActivePlayer.IsLocal);
+            _buttons.Where(b => b.name == "End Turn Button").First().gameObject.SetActive(_gameData.ActivePlayer.Id == SignalRClient.LocalPlayerId);
         }
 
         private void SetBuyButtonVisibility()
         {
             var buyButton = _buttons.Where(b => b.name == "Buy Button").First();
             buyButton.gameObject.SetActive(false);
-            if (_currentTile.Owner.IsTheMarket)
+            if (_currentTile.Owner is null)
                 buyButton.gameObject.SetActive(true);
         }
         
@@ -127,7 +128,7 @@ namespace Incorporation
 
         public void CloseDetailsPanel()
         {
-            if (_currentTile is null)
+            if (_currentTile == null)
                 return;
 
             _currentTile.SetDetailsPaneDeselected();

@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameClient", "GameClient.csproj", "{0AD50855-A0D5-53D5-DC6E-9FA408F4A146}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BestHTTP", "BestHTTP.csproj", "{722FB4C2-A11D-13D9-B85A-152C349A7C2F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameClient", "GameClient.csproj", "{0AD50855-A0D5-53D5-DC6E-9FA408F4A146}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shared", "Shared.csproj", "{45845237-F52D-EB4F-CDF0-5E3DC6A25A3E}"
 EndProject
@@ -27,14 +27,14 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{0AD50855-A0D5-53D5-DC6E-9FA408F4A146}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0AD50855-A0D5-53D5-DC6E-9FA408F4A146}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0AD50855-A0D5-53D5-DC6E-9FA408F4A146}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0AD50855-A0D5-53D5-DC6E-9FA408F4A146}.Release|Any CPU.Build.0 = Release|Any CPU
 		{722FB4C2-A11D-13D9-B85A-152C349A7C2F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{722FB4C2-A11D-13D9-B85A-152C349A7C2F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{722FB4C2-A11D-13D9-B85A-152C349A7C2F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{722FB4C2-A11D-13D9-B85A-152C349A7C2F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0AD50855-A0D5-53D5-DC6E-9FA408F4A146}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0AD50855-A0D5-53D5-DC6E-9FA408F4A146}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0AD50855-A0D5-53D5-DC6E-9FA408F4A146}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0AD50855-A0D5-53D5-DC6E-9FA408F4A146}.Release|Any CPU.Build.0 = Release|Any CPU
 		{45845237-F52D-EB4F-CDF0-5E3DC6A25A3E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{45845237-F52D-EB4F-CDF0-5E3DC6A25A3E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{45845237-F52D-EB4F-CDF0-5E3DC6A25A3E}.Release|Any CPU.ActiveCfg = Release|Any CPU

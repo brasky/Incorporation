@@ -1,13 +1,21 @@
 ﻿using Incorporation.Assets.ScriptableObjects;
 using Incorporation.Assets.ScriptableObjects.EventChannels;
-using Incorporation.Assets.Scripts.Resources;
+using Shared.Players;
+using Shared.Resources;
 using UnityEngine;
 
 namespace Incorporation.Assets.Scripts.Players
 {
     public class Player : MonoBehaviour
     {
+        public string Id { get; private set; }
+
         private GameData _gameData;
+
+        //Eventually would like a way to lock set to the game manager 
+        public PlayerData PlayerData { get; set; }
+
+        public Color Color { get; set; } = new Color(0.07f, 0.666f, 0);
 
         [SerializeField]
         private VoidEventChannel _endTurnEventChannel;
@@ -17,45 +25,21 @@ namespace Incorporation.Assets.Scripts.Players
 
         public bool IsMyTurn => _gameData.ActivePlayer == this;
 
-        private PlayerData _playerData;
-
-        public virtual Color Color => new Color(0.07f, 0.666f, 0);
-
-        public virtual bool IsRemote => false;
-
-        public virtual bool IsLocal => !IsRemote;
-        
-        public virtual bool IsTheMarket => false;
-
-        public virtual int StartingMoney => 10;
-
-        public virtual int Income => 0;
-
-        public virtual int Money => _playerData.Money;
+        public Player(string Id)
+        {
+            this.Id = Id;
+        }
 
         void Awake()
         {
-            _playerData = GetComponent<PlayerData>();
-            _playerData.Money = StartingMoney;
+            Id = SignalRClient.LocalPlayerId;
+            PlayerData = GetComponent<PlayerData>();
             _gameDataEventChannel.OnEventRaised += UpdateGameData;
         }
 
         void OnDestroy()
         {
             _gameDataEventChannel.OnEventRaised -= UpdateGameData;
-        }
-
-        public virtual int GetAvailableResourceQuantity(Resource resource) => _playerData.Resources.ContainsKey(resource) ? _playerData.Resources[resource] : 0;
-        
-        public virtual void AddResource(Resource resource, int quantity)
-        {
-            if (!_playerData.Resources.TryAdd(resource, quantity))
-                _playerData.Resources[resource] += quantity;
-        }
-
-        public virtual void ReceiveMoney(int quantity)
-        {
-            _playerData.Money += quantity;
         }
 
         public void UpdateGameData(GameData newGameData)
@@ -65,21 +49,21 @@ namespace Incorporation.Assets.Scripts.Players
 
         public bool TryMakePurchase(int price)
         {
-            if (price > Money) return false;
+            if (price > PlayerData.Money) return false;
 
-            _playerData.Money -= price;
+            //call server to make purchase
             return true;
         }
         
         public bool TryMakePurchase(Resource resource, int quantity)
         {
-            if (!_playerData.Resources.TryGetValue(resource, out int available))
-                return false;
+            //if (!PlayerData.Resources.TryGetValue(resource, out int available))
+            //    return false;
 
-            if (quantity > available)
-                return false;
+            //if (quantity > available)
+            //    return false;
 
-            _playerData.Resources[resource] -= quantity;
+            //call server to make purchase
             return true;
         }
 
@@ -87,16 +71,17 @@ namespace Incorporation.Assets.Scripts.Players
         {
             foreach (var resourceCost in resourceCosts)
             {
-                if (!_playerData.Resources.TryGetValue(resourceCost.Resource, out int available))
-                    return false;
+                //if (!PlayerData.Resources.TryGetValue(resourceCost.Resource, out int available))
+                //    return false;
 
-                if (resourceCost.Quantity > available)
-                    return false;
+                //if (resourceCost.Quantity > available)
+                //    return false;
             }
 
             foreach(var resourceCost in resourceCosts)
             {
-                _playerData.Resources[resourceCost.Resource] -= resourceCost.Quantity;
+                //_playerData.Resources[resourceCost.Resource] -= resourceCost.Quantity;
+                //call server to make purchase
             }
 
             return true;

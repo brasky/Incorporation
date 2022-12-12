@@ -30,7 +30,6 @@ namespace Incorporation.Assets.Scripts.TileGrid
         // Start is called before the first frame update
         void Start()
         {
-            _theMarket = FindObjectsOfType<Player>().Where(p => p.IsTheMarket).First();
             GenerateGrid();
         }
 
