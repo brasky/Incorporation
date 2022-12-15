@@ -41,6 +41,7 @@ namespace Incorporation
 
         void Start()
         {
+            _gameData = _gameDataChannel.MostRecentState;
             _tileDetailsPanel.gameObject.SetActive(false);
             _tileClickChannel.OnEventRaised += OpenDetailsPanel;
             _gameDataChannel.OnEventRaised += UpdateGameData;
@@ -86,7 +87,7 @@ namespace Incorporation
 
         private void UpdateEndTurnButton()
         {
-            _buttons.Where(b => b.name == "End Turn Button").First().gameObject.SetActive(_gameData.ActivePlayer.Id == SignalRClient.LocalPlayerId);
+            _buttons.Where(b => b.name == "End Turn Button").First().gameObject.SetActive(_gameData.ActivePlayer?.Id == SignalRClient.LocalPlayerId);
         }
 
         private void SetBuyButtonVisibility()
@@ -100,7 +101,7 @@ namespace Incorporation
         private void SetImproveButtonVisibility()
         {
             var improveButton = _buttons.Where(b => b.name == "Improve Button").First();
-            improveButton.gameObject.SetActive(_gameData.LocalPlayer == _currentTile.Owner && !_currentTile.IsImproved);
+            improveButton.gameObject.SetActive(_gameData.LocalPlayer == _currentTile?.Owner && !_currentTile.IsImproved);
         }
 
         private void OpenDetailsPanel(Tile tile)
@@ -113,7 +114,7 @@ namespace Incorporation
             SetImproveButtonVisibility();
 
             var text = _tileDetailsPanel.GetComponentsInChildren<TextMeshProUGUI>();
-            text.Where(t => t.name == "Tile Owner Data").First().text = tile.Owner.name;
+            text.Where(t => t.name == "Tile Owner Data").First().text = tile.Owner?.name;
 
             text.Where(t => t.name == "Tile Resource Data").First().text = tile.Resources[0].ToString();
 

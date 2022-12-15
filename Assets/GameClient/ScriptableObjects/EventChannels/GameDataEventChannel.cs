@@ -10,8 +10,12 @@ namespace Incorporation.Assets.ScriptableObjects.EventChannels
 
         public UnityAction<GameData> OnEventRaised;
 
+        public GameData MostRecentState { get; private set; }
+
         public void RaiseEvent(GameData state)
         {
+            MostRecentState = state;
+
             if (OnEventRaised != null)
                 OnEventRaised.Invoke(state);
         }

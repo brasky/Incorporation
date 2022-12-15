@@ -8,7 +8,7 @@ namespace Incorporation.Assets.Scripts.Players
 {
     public class Player : MonoBehaviour
     {
-        public string Id { get; private set; }
+        public string Id { get; set; }
 
         private GameData _gameData;
 
@@ -25,15 +25,9 @@ namespace Incorporation.Assets.Scripts.Players
 
         public bool IsMyTurn => _gameData.ActivePlayer == this;
 
-        public Player(string Id)
-        {
-            this.Id = Id;
-        }
-
         void Awake()
         {
             Id = SignalRClient.LocalPlayerId;
-            PlayerData = GetComponent<PlayerData>();
             _gameDataEventChannel.OnEventRaised += UpdateGameData;
         }
 

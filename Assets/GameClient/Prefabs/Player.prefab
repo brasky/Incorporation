@@ -10,7 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 8558111331282226120}
   - component: {fileID: 8558111331282226123}
-  - component: {fileID: 3957717399361395785}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -47,16 +46,3 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _endTurnEventChannel: {fileID: 11400000, guid: 1735be1a600ae0e4f9b5db522a2e73b5, type: 2}
   _gameDataEventChannel: {fileID: 11400000, guid: d682072585ecc0646a9ea4b2f603f105, type: 2}
---- !u!114 &3957717399361395785
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8558111331282226122}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6db85a05d0684ed4e987969c53c24fdb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Money: 0

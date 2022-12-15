@@ -19,6 +19,12 @@ public class Lobby : MonoBehaviour
     private float _timer = 0.0f;
     private const float _refreshTime = 10.0f;
 
+    [SerializeField]
+    private Player playerPrefab;
+
+    [SerializeField]
+    private RemotePlayer remotePlayerPrefab;
+
     public void Back()
     {
         SceneManager.LoadScene("MenuScene");
@@ -28,6 +34,11 @@ public class Lobby : MonoBehaviour
     public void CopyLobbyId()
     {
         GUIUtility.systemCopyBuffer = _gameData.Id;
+    }
+
+    public void StartGame()
+    {
+        SceneManager.LoadScene("GameScene");
     }
 
     void Awake()
@@ -42,6 +53,11 @@ public class Lobby : MonoBehaviour
         SignalRClient.RequestGameState();
     }
 
+    void OnDestroy()
+    {
+        SignalRClient.OnServerStateUpdate -= UpdateServerState;
+    }
+
     private void UpdateServerState(object _, ServerState serverState)
     {
         Debug.Log("Received ServerState Update");
@@ -52,17 +68,23 @@ public class Lobby : MonoBehaviour
         {
             if (player.Id == SignalRClient.LocalPlayerId)
             {
-                var localPlayer = new Player(player.Id);
+                var localPlayer = Instantiate(playerPrefab);
+                localPlayer.Id = player.Id;
+                DontDestroyOnLoad(localPlayer);
                 _gameData.Players.Add(localPlayer);
                 _gameData.LocalPlayer = localPlayer;
             }
             else
             {
-                _gameData.Players.Add(new RemotePlayer(player.Id));
+                var remotePlayer = Instantiate(remotePlayerPrefab);
+                remotePlayer.Id = player.Id;
+                DontDestroyOnLoad(remotePlayer);
+                _gameData.Players.Add(remotePlayer);
             }
         }
         UpdateLobbyId();
         UpdatePlayerList();
+        _gameDataEventChannel.RaiseEvent(_gameData);
     }
 
     // Update is called once per frame

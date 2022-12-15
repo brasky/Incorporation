@@ -833,13 +833,13 @@
       <Project>{722FB4C2-A11D-13D9-B85A-152C349A7C2F}</Project>
       <Name>BestHTTP</Name>
     </ProjectReference>
-    <ProjectReference Include="GameClient.csproj">
-      <Project>{0AD50855-A0D5-53D5-DC6E-9FA408F4A146}</Project>
-      <Name>GameClient</Name>
-    </ProjectReference>
     <ProjectReference Include="ParrelSync.csproj">
       <Project>{CB3416B2-A3E4-9587-21BF-C18FF715A23F}</Project>
       <Name>ParrelSync</Name>
+    </ProjectReference>
+    <ProjectReference Include="GameClient.csproj">
+      <Project>{0AD50855-A0D5-53D5-DC6E-9FA408F4A146}</Project>
+      <Name>GameClient</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

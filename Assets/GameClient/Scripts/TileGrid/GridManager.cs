@@ -46,7 +46,7 @@ namespace Incorporation.Assets.Scripts.TileGrid
                 for (int y = 0; y < height; y++)
                 {
                     var tile = Instantiate(tilePrefab, new Vector3(x, y, 0), Quaternion.identity);
-                    tile.SetOwner(_theMarket);
+                    tile.SetOwner(null);
                     _tiles[x * width + y] = tile;
                 }
             }
@@ -67,7 +67,7 @@ namespace Incorporation.Assets.Scripts.TileGrid
 
         public Tile GetRandomUnownedTile()
         {
-            var unownedTiles = _tiles.Where(t => t.Owner == _theMarket).ToArray();
+            var unownedTiles = _tiles.Where(t => t.Owner == null).ToArray();
             if (unownedTiles.Length == 0)
                 return null;
 

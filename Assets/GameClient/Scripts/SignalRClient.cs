@@ -3,6 +3,7 @@ using UnityEngine;
 using BestHTTP.SignalRCore;
 using BestHTTP.SignalRCore.Encoders;
 using Shared;
+using System.Linq;
 
 namespace Incorporation
 {
@@ -27,6 +28,7 @@ namespace Incorporation
             {
                 Debug.Log("Refreshing Game State...");
                 ServerState = serverState;
+                ServerState.LocalPlayer = ServerState.Players.Where(p => p.Id == LocalPlayerId).First();
                 OnServerStateUpdate?.Invoke(null, ServerState);
             });
 
@@ -68,6 +70,11 @@ namespace Incorporation
         public static void Disconnect()
         {
             Hub.CloseAsync();
+        }
+
+        internal static void StartGame()
+        {
+            Hub.Send("StartGame", ServerState.Id);
         }
     }
 }

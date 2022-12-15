@@ -14,6 +14,7 @@ namespace Incorporation.Assets.Scripts.TileGrid
         private TileData _tileData;
 
         private bool _detailPaneSelected = false;
+        private Color _unownedTileColor = new Color(0.86f, 0.86f, 0.86f);
 
         [SerializeField]
         private TileEventChannel _tileClickEventChannel;
@@ -67,13 +68,18 @@ namespace Incorporation.Assets.Scripts.TileGrid
 
         void Start()
         {
-            _renderer.color = Owner.Color;
+            if (Owner is null)
+                _renderer.color = _unownedTileColor;
+            else
+                _renderer.color = Owner.Color;
         }
 
         public void SetOwner(Player owner)
         {
             _tileData.Owner = owner;
-            _renderer.color = Owner.Color;
+
+            if (owner is not null)
+                _renderer.color = Owner.Color;
         }
 
         public void SetDetailsPaneSelected()
@@ -85,7 +91,10 @@ namespace Incorporation.Assets.Scripts.TileGrid
 
         public void SetDetailsPaneDeselected()
         {
-            _renderer.color = Owner.Color;
+            if (Owner is null)
+                _renderer.color = _unownedTileColor;
+            else
+                _renderer.color = Owner.Color;
             _detailPaneSelected = false;
         }
 
@@ -97,8 +106,17 @@ namespace Incorporation.Assets.Scripts.TileGrid
 
         private void OnMouseExit()
         {
-            if (!_detailPaneSelected)
+            if (_detailPaneSelected)
+                return;
+
+            if (Owner is null)
+            {
+                _renderer.color = _unownedTileColor;
+            }
+            else
+            {
                 _renderer.color = Owner.Color;
+            }
         }
 
         private void OnMouseDown()

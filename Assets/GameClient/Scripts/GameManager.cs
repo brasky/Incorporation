@@ -34,8 +34,8 @@ namespace Incorporation
         [SerializeField]
         private Player playerPrefab;
 
-        [SerializeField]
-        private Player theMarketPrefab;
+        //[SerializeField]
+        //private Player theMarketPrefab;
 
         [SerializeField]
         private RemotePlayer remotePlayerPrefab;
@@ -43,17 +43,22 @@ namespace Incorporation
         [SerializeField]
         private GridManager gridManager;
 
-        private readonly List<Player> _players = new();
-
         private int turnCount = -1;
         private bool _haveStartedPollingForRemotePlayer = false;
 
+        public int TurnOrderIndex { get; private set; } = 0;
+        public IReadOnlyList<Player> TurnOrder {  get; private set; }
+
         void Awake()
         {
+            _gameData = _gameDataEventChannel.MostRecentState;
+
+            //TODO: shuffle turn order
+            TurnOrder = _gameData.Players;
+
             SignalRClient.OnServerStateUpdate += UpdateServerState;
-            _gameData = ScriptableObject.CreateInstance<GameData>();
-            _gameData.State = GameState.SETUP;
-            SetupPlayers();
+            SignalRClient.StartGame();
+            //SetupPlayers();
         }
 
         private void UpdateServerState(object _, ServerState serverState)
@@ -74,16 +79,12 @@ namespace Incorporation
         {
             _endTurnEventChannel.OnEventRaised += MoveNextPhase;
             _requestGameDataUpdateChannel.OnEventRaised += SendGameData;
-
-            //GivePlayersStartingTiles();
-
-            SendGameData();
             //MoveNextPhase();
         }
 
         private void GivePlayersStartingTiles()
         {
-            foreach(var player in _players)
+            foreach(var player in _gameData.Players)
             {
                 var tile = gridManager.GetRandomUnownedTile();
                 tile.SetOwner(player);
@@ -95,37 +96,33 @@ namespace Incorporation
             _gameDataEventChannel.RaiseEvent(_gameData);
         }
 
-        void SetupPlayers()
-        {
-            if (_numberOfPlayers == 0)
-            {
-                Debug.LogError("The game requires at least 1 player to be set in the Game Manager");
-            }
-
-            var local = Instantiate(playerPrefab);
-            local.name = "Local Player";
-            _players.Add(local);
-
-            _gameData.LocalPlayer = local;
-
-            var theMarket = Instantiate(theMarketPrefab);
-            theMarket.name = "The Market";
-
-            for (int i = 1; i < _numberOfPlayers; i++)
-            {
-                var remote = Instantiate(remotePlayerPrefab);
-                remote.name = $"Remote Player {i}";
-                _players.Add(remote);
-            }
-
-            _players.Add(theMarket);
-
-            _gameData.Players = _players;
-        }
-
         void MoveNextPhase()
         {
-            //turnCount++;
+            var previousState = _gameData.State;
+            Debug.Log($"LEAVING PHASE {_gameData.State}");
+            turnCount++;
+            _gameData.ActivePlayer = TurnOrder[turnCount % _gameData.Players.Count];
+
+            if (previousState == GameState.SETUP)
+            {
+                _gameData.State = _gameData.ActivePlayer.Id == SignalRClient.LocalPlayerId ? GameState.LOCALPLAYERTURN 
+                                                                                            : GameState.REMOTEPLAYERTURN;
+            }
+
+            if(previousState == GameState.LOCALPLAYERTURN)
+            {
+                _gameData.State = GameState.REMOTEPLAYERTURN;
+                _haveStartedPollingForRemotePlayer = false;
+            }
+            
+            if(previousState == GameState.REMOTEPLAYERTURN)
+            {
+                _gameData.State = GameState.LOCALPLAYERTURN;
+            }
+
+            Debug.Log($"ENTERING PHASE {_gameData.State}");
+
+
             //_gameData.ActivePlayer = _players[turnCount % _numberOfPlayers];
             //if (_gameData.ActivePlayer.IsTheMarket)
             //{
@@ -143,7 +140,7 @@ namespace Incorporation
             //    GiveTileYieldsToActivePlayer();
             //}
 
-            _gameDataEventChannel.RaiseEvent(_gameData);
+            //_gameDataEventChannel.RaiseEvent(_gameData);
         }
 
         //private void GiveIncomeToActivePlayer()
@@ -166,6 +163,13 @@ namespace Incorporation
         // Update is called once per frame
         void Update()
         {
+            if (_gameData.State == GameState.SETUP)
+            {
+                GivePlayersStartingTiles();
+                MoveNextPhase();
+                SendGameData();
+            }
+
             if (_gameData.State == GameState.REMOTEPLAYERTURN && !_haveStartedPollingForRemotePlayer)
             {
                 _haveStartedPollingForRemotePlayer = true;

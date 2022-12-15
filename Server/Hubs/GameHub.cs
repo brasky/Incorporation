@@ -30,19 +30,25 @@ namespace Server.Hubs
 
         public async Task CreateLobby()
         {
-            string uuid = Guid.NewGuid().ToString();
+            string groupId = Guid.NewGuid().ToString();
             PlayerData player = new PlayerData(Context.ConnectionId);
-            games[uuid] = new ServerState(uuid, player);
-            await Groups.AddToGroupAsync(Context.ConnectionId, uuid);
-            await NewLobbyCreated(uuid);
+            games[groupId] = new ServerState(groupId, player);
+            await Groups.AddToGroupAsync(Context.ConnectionId, groupId);
+            await NewLobbyCreated(groupId);
         }
 
         public async Task SendMessage(string msg)
             => await Clients.All.SendAsync("ChatMessage", msg);
 
+        /// <summary>
+        /// Sends the game state for a group (lobby) on a channel
+        /// </summary>
+        /// <param name="groupId">the group/lobby guid</param>
+        /// <param name="channel">Where the client is listening, RefreshGameState or JoinedGame</param>
+        /// <returns></returns>
         private Task SendGameState(string groupId, string channel)
         {
-            logger.LogInformation($"Sending game state to: {groupId}");
+            logger.LogInformation($"Sending game state to: {groupId} - {games[groupId].State}");
             return Clients.Group(groupId).SendAsync(channel, games[groupId]);
         }
 
@@ -54,14 +60,23 @@ namespace Server.Hubs
             await Clients.Caller.SendAsync("RefreshGameState", game);
         }
 
-        public async Task JoinGame(string Id) 
+        public async Task JoinGame(string groupId) 
         {
-            logger.LogInformation($"player {Context.ConnectionId} is joining game {Id}");
-            if (!games.TryGetValue(Id, out var game)) return;
+            logger.LogInformation($"player {Context.ConnectionId} is joining game {groupId}");
+            if (!games.TryGetValue(groupId, out var game)) return;
             game.Players.Add(new PlayerData(Context.ConnectionId));
 
             //Need to tell caller their connection id.
             await Clients.Caller.SendAsync("JoinedGame", Context.ConnectionId);
+            await SendGameState(groupId, "RefreshGameState");
+        }
+
+        public async Task StartGame(string groupId)
+        {
+            logger.LogInformation($"player {Context.ConnectionId} is starting game {groupId}");
+            var game = games[groupId];
+            game.State = GameState.SETUP;
+            await SendGameState(groupId, "RefreshGameState");
         }
     }
 
