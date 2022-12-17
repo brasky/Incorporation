@@ -36,6 +36,7 @@ namespace Incorporation
             if (newGameSelected && _client.Hub.State == ConnectionStates.Connected)
             {
                 newGameSelected = false;
+                _client.CreateLobby();
                 SceneManager.LoadScene("LobbyScene");
             }
 

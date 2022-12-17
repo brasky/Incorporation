@@ -51,7 +51,6 @@ public class Lobby : MonoBehaviour
     void Start()
     {
         _client.OnServerStateUpdate += UpdateServerState;
-        _client.CreateLobby();
     }
 
     void OnDestroy()
@@ -106,6 +105,11 @@ public class Lobby : MonoBehaviour
 
             UpdateLobbyId();
             UpdatePlayerList();
+        }
+
+        if (_gameData.State == GameState.SETUP)
+        {
+            StartGame();
         }
     }
 
