@@ -5,6 +5,8 @@ using BestHTTP.SignalRCore;
 
 namespace Incorporation
 {
+    //TODO: This script is currently in use by MainMenu AND JoinGameMenu. This makes it hard to reason about the script because it is not static,
+    //a new object is created when the player switches from the main menu to the join game menu.
     public class MainMenu : MonoBehaviour
     {
         private bool newGameSelected = false;
