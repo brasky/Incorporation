@@ -1950,7 +1950,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 2093270430}
+      - m_Target: {fileID: 1101977521}
         m_TargetAssemblyTypeName: Incorporation.MainMenu, GameClient
         m_MethodName: JoinGame
         m_Mode: 1

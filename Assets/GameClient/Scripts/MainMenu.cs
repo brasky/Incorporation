@@ -8,6 +8,8 @@ namespace Incorporation
     public class MainMenu : MonoBehaviour
     {
         private bool newGameSelected = false;
+        private bool joinGameSelected = false;
+        private bool joiningGame = false;
         private float _timer = 0.0f;
         private float _timeout = 5.0f;
 
@@ -35,7 +37,16 @@ namespace Incorporation
                 SceneManager.LoadScene("LobbyScene");
             }
 
-            if (newGameSelected && _client.Hub.State != ConnectionStates.Connected)
+            if (joinGameSelected && !joiningGame && _client.Hub.State == ConnectionStates.Connected)
+            {
+                joiningGame = true;
+                var input = FindObjectOfType<TMP_InputField>();
+                Debug.Log($"Joining game: {input.text}");
+                _client.JoinGame(input.text);
+                SceneManager.LoadScene("LobbyScene");
+            }
+
+            if ((newGameSelected || joinGameSelected) && _client.Hub.State != ConnectionStates.Connected)
             {
                 _timer += Time.deltaTime;
             }
@@ -45,6 +56,7 @@ namespace Incorporation
                 _timer = 0.0f;
                 _client.Disconnect();
                 newGameSelected = false;
+                joinGameSelected = false;
                 Debug.Log("Failed to connect to server");
             }
         }
@@ -52,12 +64,10 @@ namespace Incorporation
         public void JoinGame()
         {
             if (_client.Hub.State != ConnectionStates.Connected)
+            {
                 _client.Connect();
-
-            var input = FindObjectOfType<TMP_InputField>();
-            Debug.Log($"Joining game: {input.text}");
-            _client.JoinGame(input.text);
-            SceneManager.LoadScene("LobbyScene");
+                joinGameSelected = true;
+            }
         }
 
         public void Quit()
