@@ -22,6 +22,13 @@ namespace Server.Hubs
             return base.OnConnectedAsync();
         }
 
+        public override Task OnDisconnectedAsync(Exception? exception)
+        {
+            logger.LogInformation($"Client disconnected: {Context.ConnectionId}");
+
+            return base.OnDisconnectedAsync(exception);
+        }
+
         private Task NewLobbyCreated(string groupId)
         {
             logger.LogInformation($"New lobby created {groupId}");

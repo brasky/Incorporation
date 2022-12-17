@@ -5,6 +5,7 @@ using Shared;
 using Shared.Resources;
 using System.Linq;
 using TMPro;
+using UnityEditor.PackageManager;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -39,6 +40,8 @@ namespace Incorporation
 
         private Tile _currentTile;
 
+        private SignalRClient _client => SignalRClient.Instance;
+
         void Start()
         {
             _gameData = _gameDataChannel.MostRecentState;
@@ -62,7 +65,7 @@ namespace Incorporation
 
         public void EndTurnButtonPress()
         {
-            if (_gameData.ActivePlayer.Id == SignalRClient.LocalPlayerId)
+            if (_gameData.ActivePlayer.Id == _client.LocalPlayerId)
                 _endTurnChannel.RaiseEvent();
         }
 
@@ -87,7 +90,7 @@ namespace Incorporation
 
         private void UpdateEndTurnButton()
         {
-            _buttons.Where(b => b.name == "End Turn Button").First().gameObject.SetActive(_gameData.ActivePlayer?.Id == SignalRClient.LocalPlayerId);
+            _buttons.Where(b => b.name == "End Turn Button").First().gameObject.SetActive(_gameData.ActivePlayer?.Id == _client.LocalPlayerId);
         }
 
         private void SetBuyButtonVisibility()

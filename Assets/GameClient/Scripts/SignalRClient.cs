@@ -7,16 +7,35 @@ using System.Linq;
 
 namespace Incorporation
 {
-    public static class SignalRClient
+    public class SignalRClient
     {
-        private static readonly Uri uri = new ("https://localhost:7021/game");
-        public static readonly HubConnection Hub = new (uri, new JsonProtocol(new LitJsonEncoder()));
-        public static string LocalPlayerId { get; private set; } = string.Empty;
-        private static ServerState ServerState;
-        public static event EventHandler<ServerState> OnServerStateUpdate;
-
-        static SignalRClient()
+        private static SignalRClient _instance;
+        public static SignalRClient Instance
         {
+            get
+            {
+                return _instance is null ? _instance = new SignalRClient() : _instance;
+            }
+        }
+
+        private static readonly Uri uri = new("https://localhost:7021/game");
+        public HubConnection Hub { get; private set;} = new (uri, new JsonProtocol(new LitJsonEncoder()));
+        public string LocalPlayerId { get; private set; } = string.Empty;
+        private ServerState ServerState;
+        public event EventHandler<ServerState> OnServerStateUpdate;
+
+        SignalRClient()
+        {
+            Hub.OnClosed += (_) => _instance = null;
+            Hub.OnConnected += (_) => SetChannels();
+
+            _instance = this;
+        }
+
+        private void SetChannels()
+        {
+            Debug.Log("Connected! Setting up channels.");
+
             Hub.On<string>("JoinedGame", (localPlayerId) =>
             {
                 Debug.Log($"Joined game as {localPlayerId}");
@@ -42,37 +61,39 @@ namespace Incorporation
             });
         }
 
-        public static void Connect()
+        public void Connect()
         {
-            if (Hub.State == ConnectionStates.Initial || Hub.State == ConnectionStates.Redirected)
+            if (Hub.State != ConnectionStates.Connected)
             {
+                
                 Debug.Log("Connecting...");
-                Hub.ConnectAsync();
+                Hub.StartConnect();
             }
         }
 
-        public static void CreateLobby()
+        public void CreateLobby()
         {
             Debug.Log("Creating Lobby...");
             Hub.Send("CreateLobby");
         }
 
-        public static void RequestGameState()
+        public void RequestGameState()
         {
             Hub.Send("RequestGameState");
         }
 
-        public static void JoinGame(string id)
+        public void JoinGame(string id)
         {
             Hub.Send("JoinGame", id);
         }
 
-        public static void Disconnect()
+        public void Disconnect()
         {
-            Hub.CloseAsync();
+            Hub.StartClose();
+            _instance = null;
         }
 
-        internal static void StartGame()
+        internal void StartGame()
         {
             Hub.Send("StartGame", ServerState.Id);
         }

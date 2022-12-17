@@ -8,6 +8,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEditor.PackageManager;
 using UnityEngine;
 
 namespace Incorporation
@@ -43,6 +44,8 @@ namespace Incorporation
         [SerializeField]
         private GridManager gridManager;
 
+        private SignalRClient _client => SignalRClient.Instance;
+
         private int turnCount = -1;
         private bool _haveStartedPollingForRemotePlayer = false;
 
@@ -56,8 +59,8 @@ namespace Incorporation
             //TODO: shuffle turn order
             TurnOrder = _gameData.Players;
 
-            SignalRClient.OnServerStateUpdate += UpdateServerState;
-            SignalRClient.StartGame();
+            _client.OnServerStateUpdate += UpdateServerState;
+            _client.StartGame();
             //SetupPlayers();
         }
 
@@ -105,7 +108,7 @@ namespace Incorporation
 
             if (previousState == GameState.SETUP)
             {
-                _gameData.State = _gameData.ActivePlayer.Id == SignalRClient.LocalPlayerId ? GameState.LOCALPLAYERTURN 
+                _gameData.State = _gameData.ActivePlayer.Id == _client.LocalPlayerId ? GameState.LOCALPLAYERTURN 
                                                                                             : GameState.REMOTEPLAYERTURN;
             }
 

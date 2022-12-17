@@ -2,6 +2,7 @@
 using Incorporation.Assets.ScriptableObjects.EventChannels;
 using Shared.Players;
 using Shared.Resources;
+using UnityEditor.PackageManager;
 using UnityEngine;
 
 namespace Incorporation.Assets.Scripts.Players
@@ -25,9 +26,11 @@ namespace Incorporation.Assets.Scripts.Players
 
         public bool IsMyTurn => _gameData.ActivePlayer == this;
 
+        private SignalRClient _client = SignalRClient.Instance;
+
         void Awake()
         {
-            Id = SignalRClient.LocalPlayerId;
+            Id = _client.LocalPlayerId;
             _gameDataEventChannel.OnEventRaised += UpdateGameData;
         }
 

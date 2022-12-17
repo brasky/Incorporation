@@ -25,10 +25,12 @@ public class Lobby : MonoBehaviour
     [SerializeField]
     private RemotePlayer remotePlayerPrefab;
 
+    private SignalRClient _client => SignalRClient.Instance;
+
     public void Back()
     {
+        _client.Disconnect();
         SceneManager.LoadScene("MenuScene");
-        SignalRClient.Disconnect();
     }
 
     public void CopyLobbyId()
@@ -43,30 +45,35 @@ public class Lobby : MonoBehaviour
 
     void Awake()
     {
-        Debug.Log("Loading Lobby...");
-        SignalRClient.OnServerStateUpdate += UpdateServerState;
+
+    }
+
+    void Start()
+    {
+        _client.OnServerStateUpdate += UpdateServerState;
+        _client.CreateLobby();
+    }
+
+    void OnDestroy()
+    {
+        _client.OnServerStateUpdate -= UpdateServerState;
+    }
+
+    private void UpdateServerState(object _, ServerState serverState)
+    {
         if (_gameData is null)
         {
             _gameData = ScriptableObject.CreateInstance<GameData>();
             _gameData.State = GameState.LOBBY;
         }
-        SignalRClient.RequestGameState();
-    }
 
-    void OnDestroy()
-    {
-        SignalRClient.OnServerStateUpdate -= UpdateServerState;
-    }
-
-    private void UpdateServerState(object _, ServerState serverState)
-    {
         Debug.Log("Received ServerState Update");
         _gameData.Id = serverState.Id;
         _gameData.State = serverState.State;
         _gameData.Players.Clear();
         foreach (var player in serverState.Players)
         {
-            if (player.Id == SignalRClient.LocalPlayerId)
+            if (player.Id == _client.LocalPlayerId)
             {
                 var localPlayer = Instantiate(playerPrefab);
                 localPlayer.Id = player.Id;
@@ -95,7 +102,7 @@ public class Lobby : MonoBehaviour
         if (_timer > _refreshTime)
         {
             _timer = 0.0f;
-            SignalRClient.RequestGameState();
+            _client.RequestGameState();
 
             UpdateLobbyId();
             UpdatePlayerList();
