@@ -93,7 +93,12 @@ namespace Incorporation
             _instance = null;
         }
 
-        internal void StartGame()
+        public void Ready()
+        {
+            Hub.Send("Ready", ServerState.Id);
+        }
+
+        public void StartGame()
         {
             Hub.Send("StartGame", ServerState.Id);
         }

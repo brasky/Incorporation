@@ -2,10 +2,8 @@ using Incorporation.Assets.ScriptableObjects;
 using Incorporation.Assets.ScriptableObjects.EventChannels;
 using Incorporation.Assets.Scripts.TileGrid;
 using Shared;
-using Shared.Resources;
 using System.Linq;
 using TMPro;
-using UnityEditor.PackageManager;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -104,7 +102,7 @@ namespace Incorporation
         private void SetImproveButtonVisibility()
         {
             var improveButton = _buttons.Where(b => b.name == "Improve Button").First();
-            improveButton.gameObject.SetActive(_gameData.LocalPlayer == _currentTile?.Owner && !_currentTile.IsImproved);
+            improveButton.gameObject.SetActive(_gameData.LocalPlayer.Id == _currentTile?.Owner?.Id && !_currentTile.IsImproved);
         }
 
         private void OpenDetailsPanel(Tile tile)
@@ -144,7 +142,7 @@ namespace Incorporation
         {
             if (_gameData.ActivePlayer.TryMakePurchase(_currentTile.Price))
             {
-                _currentTile.SetOwner(_gameData.ActivePlayer);
+                //_currentTile.SetOwner(_gameData.ActivePlayer);
                 _requestGameDataUpdateChannel.RaiseEvent();
             }
 
@@ -157,7 +155,7 @@ namespace Incorporation
         {
             if (_gameData.ActivePlayer.TryMakePurchase(_currentTile.ResourceCosts))
             {
-                _currentTile.Improve();
+                //_currentTile.Improve();
                 SetImproveButtonVisibility();
                 OpenDetailsPanel(_currentTile);
                 UpdatePlayerDetailsPanel();

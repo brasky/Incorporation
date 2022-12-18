@@ -1,6 +1,7 @@
-using Incorporation.Assets.ScriptableObjects.EventChannels;
 using Incorporation.Assets.Scripts.Players;
-using System.Collections;
+using Shared;
+using Shared.Tiles;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -8,10 +9,8 @@ namespace Incorporation.Assets.Scripts.TileGrid
 {
     public class GridManager : MonoBehaviour
     {
-        [SerializeField]
         private int width;
 
-        [SerializeField]
         private int height;
 
         [SerializeField]
@@ -21,7 +20,8 @@ namespace Incorporation.Assets.Scripts.TileGrid
         private new Transform camera;
 
         private Player _theMarket;
-        private Tile[] _tiles;
+        private List<Tile> _tiles;
+        private Tile[,] _tileMap;
 
         void Awake()
         {
@@ -30,24 +30,38 @@ namespace Incorporation.Assets.Scripts.TileGrid
         // Start is called before the first frame update
         void Start()
         {
-            GenerateGrid();
         }
 
         void OnDestroy()
         {
         }
 
-        void GenerateGrid()
+        public void UpdateGrid(List<Tile> gameDataTiles, ServerState serverState)
         {
-            _tiles = new Tile[width * height];
+            width = serverState.MapWidth;
+            height= serverState.MapHeight;
+
+            if (_tileMap is null || _tiles is null)
+            {
+                GenerateGrid(serverState.Tiles);
+                gameDataTiles.AddRange(_tiles);
+            }
+        }
+
+        public void GenerateGrid(List<TileData> tiles)
+        {
+            _tileMap = new Tile[width, height];
+            _tiles = new List<Tile>();
 
             for (int x = 0; x < width; x++)
             {
                 for (int y = 0; y < height; y++)
                 {
                     var tile = Instantiate(tilePrefab, new Vector3(x, y, 0), Quaternion.identity);
-                    tile.SetOwner(null);
-                    _tiles[x * width + y] = tile;
+                    //tile.SetOwner(null);
+                    tile._tileData = tiles[x * width + y];
+                    _tileMap[x, y] = tile;
+                    _tiles.Add(tile);
                 }
             }
 
@@ -57,21 +71,23 @@ namespace Incorporation.Assets.Scripts.TileGrid
 
         public Tile[] GetTilesOwnedByPlayer(Player player, bool includeUnimproved)
         {
-            return _tiles.Where(t => t.Owner == player && (includeUnimproved || t.IsImproved)).ToArray();
+            return _tiles.Where(t => t.Owner.Id == player.Id && (includeUnimproved || t.IsImproved)).ToArray();
         }
 
         public Tile GetRandomTile()
         {
-            return _tiles[Random.Range(0, _tiles.Length)];
+            return _tiles[0];
+            //return _tileMap[Random.Range(0, _tiles.Length)];
         }
 
         public Tile GetRandomUnownedTile()
         {
-            var unownedTiles = _tiles.Where(t => t.Owner == null).ToArray();
-            if (unownedTiles.Length == 0)
-                return null;
+            return _tiles[0];
+            //var unownedTiles = _tiles.Where(t => t.Owner == null).ToArray();
+            //if (unownedTiles.Length == 0)
+            //    return null;
 
-            return unownedTiles[Random.Range(0, unownedTiles.Length)];
+            //return unownedTiles[Random.Range(0, unownedTiles.Length)];
         }
     }
 }

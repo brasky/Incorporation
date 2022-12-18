@@ -1,7 +1,6 @@
 ﻿using Shared.Resources;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 
 namespace Shared.Players
 {
@@ -17,6 +16,12 @@ namespace Shared.Players
         }
 
         public string Id { get; private set; } = string.Empty;
+
+        public string name { get; set; } = string.Empty;
+
+        public bool IsHost { get; set; } = false;
+
+        public bool IsReady { get; set; } = false;
 
         public int Money { get; private set; } = 0;
 

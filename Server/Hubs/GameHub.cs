@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.SignalR;
 using Shared;
 using Shared.Players;
+using Shared.Tiles;
 using System.Collections.Concurrent;
-using System.Text.RegularExpressions;
 
 namespace Server.Hubs
 {
@@ -39,6 +39,7 @@ namespace Server.Hubs
         {
             string groupId = Guid.NewGuid().ToString();
             PlayerData player = new PlayerData(Context.ConnectionId);
+            player.IsHost = true;
             games[groupId] = new ServerState(groupId, player);
             await Groups.AddToGroupAsync(Context.ConnectionId, groupId);
             await NewLobbyCreated(groupId);
@@ -53,17 +54,17 @@ namespace Server.Hubs
         /// <param name="groupId">the group/lobby guid</param>
         /// <param name="channel">Where the client is listening, RefreshGameState or JoinedGame</param>
         /// <returns></returns>
-        private Task SendGameState(string groupId, string channel)
+        private async Task SendGameState(string groupId, string channel)
         {
             logger.LogInformation($"Sending game state to: {groupId} - {games[groupId].State}");
-            return Clients.Group(groupId).SendAsync(channel, games[groupId]);
+            await Clients.Group(groupId).SendAsync(channel, games[groupId]);
         }
 
         public async Task RequestGameState()
         {
             logger.LogInformation($"Player requested game state: {Context.ConnectionId}");
             var game = games.Values.Where(s => s.Players.Any(p => p.Id == Context.ConnectionId)).First();
-            logger.LogInformation($"Returning state for game {game.Id}");
+            logger.LogInformation($"Returning state for game {game.Id} - {game.State}");
             await Clients.Caller.SendAsync("RefreshGameState", game);
         }
 
@@ -72,7 +73,7 @@ namespace Server.Hubs
             logger.LogInformation($"player {Context.ConnectionId} is joining game {groupId}");
             if (!games.TryGetValue(groupId, out var game)) return;
             game.Players.Add(new PlayerData(Context.ConnectionId));
-
+            await Groups.AddToGroupAsync(Context.ConnectionId, groupId);
             //Need to tell caller their connection id.
             await Clients.Caller.SendAsync("JoinedGame", Context.ConnectionId);
             await SendGameState(groupId, "RefreshGameState");
@@ -82,9 +83,48 @@ namespace Server.Hubs
         {
             logger.LogInformation($"player {Context.ConnectionId} is starting game {groupId}");
             var game = games[groupId];
-            game.State = GameState.SETUP;
+            if (game.State == GameState.LOBBY && game.Players.Where(p => p.Id == Context.ConnectionId).First().IsHost)
+            {
+                game.State = GameState.SETUP;
+                await SendGameState(groupId, "RefreshGameState");
+
+                Server.SetupGame(game);
+
+                game.State = GameState.READYCHECK;
+                await SendGameState(groupId, "ReadyCheck");
+            }
+        }
+
+        public async Task Ready(string groupId)
+        {
+            logger.LogInformation($"player {Context.ConnectionId} is ready");
+            var game = games[groupId];
+            game.Players.Where(p => p.Id == Context.ConnectionId).First().IsReady = true;
+
+            if (game.Players.All(p => p.IsReady))
+            {
+                game.State = GameState.SETUPCOMPLETE;
+            }
+
+            logger.LogInformation($"{game.Players.Count(p => p.IsReady)} players ready");
+
             await SendGameState(groupId, "RefreshGameState");
         }
     }
 
+    public static class Server
+    {
+        public static void SetupGame(ServerState state)
+        {
+            for(var x = 0; x < state.MapWidth; x++)
+            {
+                for (var y = 0; y < state.MapWidth; y++)
+                {
+                    var data = new TileData(x, y);
+                    state.Tiles.Add(data);
+                    state.TileMap[x, y] = data;
+                }
+            }
+        }
+    }
 }

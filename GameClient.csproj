@@ -65,7 +65,6 @@
     <Compile Include="Assets\GameClient\ScriptableObjects\TextData.cs" />
     <Compile Include="Assets\GameClient\Scripts\Players\RemotePlayer.cs" />
     <Compile Include="Assets\GameClient\Scripts\GameManager.cs" />
-    <Compile Include="Assets\GameClient\Scripts\TileGrid\TileData.cs" />
     <Compile Include="Assets\GameClient\Scripts\SignalRClient.cs" />
     <Compile Include="Assets\GameClient\Scripts\Players\TheMarket.cs" />
     <Compile Include="Assets\GameClient\ScriptableObjects\GameData.cs" />

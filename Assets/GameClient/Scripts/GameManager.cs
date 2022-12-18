@@ -3,12 +3,9 @@ using Incorporation.Assets.ScriptableObjects.EventChannels;
 using Incorporation.Assets.Scripts.Players;
 using Incorporation.Assets.Scripts.TileGrid;
 using Shared;
-using Shared.Resources;
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEditor.PackageManager;
 using UnityEngine;
 
 namespace Incorporation
@@ -51,6 +48,7 @@ namespace Incorporation
 
         public int TurnOrderIndex { get; private set; } = 0;
         public IReadOnlyList<Player> TurnOrder {  get; private set; }
+        public IReadOnlyCollection<Player> Players => _gameData.Players;
 
         void Awake()
         {
@@ -60,14 +58,16 @@ namespace Incorporation
             TurnOrder = _gameData.Players;
 
             _client.OnServerStateUpdate += UpdateServerState;
-            _client.StartGame();
-            //SetupPlayers();
+            _client.RequestGameState();
         }
 
         private void UpdateServerState(object _, ServerState serverState)
         {
-            Debug.Log("Received ServerState Update");
+            Debug.Log($"Received ServerState Update - {serverState.State}");
             _gameData.State = serverState.State;
+            _gameData.MapWidth = serverState.MapWidth;
+            _gameData.MapHeight = serverState.MapHeight;
+
             foreach(var player in _gameData.Players)
             {
                 var newData = serverState.Players.Where(p => p.Id == player.Id).First();
@@ -75,6 +75,7 @@ namespace Incorporation
                 player.PlayerData = newData;
             }
 
+            gridManager.UpdateGrid(_gameData.Tiles, serverState);
             SendGameData();
         }
 
@@ -83,15 +84,6 @@ namespace Incorporation
             _endTurnEventChannel.OnEventRaised += MoveNextPhase;
             _requestGameDataUpdateChannel.OnEventRaised += SendGameData;
             //MoveNextPhase();
-        }
-
-        private void GivePlayersStartingTiles()
-        {
-            foreach(var player in _gameData.Players)
-            {
-                var tile = gridManager.GetRandomUnownedTile();
-                tile.SetOwner(player);
-            }
         }
 
         void SendGameData()
@@ -106,7 +98,7 @@ namespace Incorporation
             turnCount++;
             _gameData.ActivePlayer = TurnOrder[turnCount % _gameData.Players.Count];
 
-            if (previousState == GameState.SETUP)
+            if (previousState == GameState.SETUPCOMPLETE)
             {
                 _gameData.State = _gameData.ActivePlayer.Id == _client.LocalPlayerId ? GameState.LOCALPLAYERTURN 
                                                                                             : GameState.REMOTEPLAYERTURN;
@@ -166,9 +158,8 @@ namespace Incorporation
         // Update is called once per frame
         void Update()
         {
-            if (_gameData.State == GameState.SETUP)
+            if (_gameData.State == GameState.SETUPCOMPLETE)
             {
-                GivePlayersStartingTiles();
                 MoveNextPhase();
                 SendGameData();
             }

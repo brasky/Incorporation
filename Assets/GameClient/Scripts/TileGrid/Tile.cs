@@ -1,7 +1,7 @@
 using Incorporation.Assets.ScriptableObjects.EventChannels;
-using Incorporation.Assets.Scripts.Players;
+using Shared.Players;
 using Shared.Resources;
-using System;
+using Shared.Tiles;
 using System.Text;
 using TMPro;
 using UnityEngine;
@@ -11,26 +11,23 @@ namespace Incorporation.Assets.Scripts.TileGrid
     public class Tile : MonoBehaviour
     {
         private SpriteRenderer _renderer;
-        private TileData _tileData;
+        public TileData _tileData;
 
         private bool _detailPaneSelected = false;
         private Color _unownedTileColor = new Color(0.86f, 0.86f, 0.86f);
+        public Color OwnerColor { get; set; } = new Color(0.0f, 0.0f, 0.0f);
+
+        public PlayerData Owner => _tileData.Owner;
+        public bool IsImproved => _tileData.IsImproved;
+        public int Yield => _tileData.Yield;
+        public ResourceCost[] ResourceCosts => _tileData.ResourceCosts;
 
         [SerializeField]
         private TileEventChannel _tileClickEventChannel;
 
-        [SerializeField]
-        private int maxPossibleYield = 10;
 
-        public ResourceCost[] ResourceCosts { get; private set; }
-
-        public bool IsImproved { get; private set; } = false;
-        public Player Owner => _tileData.Owner;
         public Resource[] Resources => _tileData.Resources;
-        public int Yield { get; private set; }
         public int Price => _tileData.Price;
-
-        public void Improve() => IsImproved = true;
 
         public string GetResourceCostsAsString()
         {
@@ -51,35 +48,17 @@ namespace Incorporation.Assets.Scripts.TileGrid
         void Awake()
         {
             _renderer = GetComponent<SpriteRenderer>();
-            _tileData = GetComponent<TileData>();
-
-            var randomResource = (Resource)UnityEngine.Random.Range(0, Enum.GetNames(typeof(Resource)).Length);
-            _tileData.Resources = new Resource[1] { randomResource };
-
-            Yield = UnityEngine.Random.Range(1, maxPossibleYield);
-
-            //For now just setting the resource cost equal to the random resource and the yield.
-            ResourceCosts = new ResourceCost[1];
-            ResourceCosts[0] = new ResourceCost(randomResource, Yield);
-
-            var tileText = GetComponentInChildren<TextMeshProUGUI>();
-            tileText.text = Resources[0].ToString();
         }
 
         void Start()
         {
-            if (Owner is null)
+            if (_tileData.Owner is null)
                 _renderer.color = _unownedTileColor;
             else
-                _renderer.color = Owner.Color;
-        }
+                _renderer.color = OwnerColor;
 
-        public void SetOwner(Player owner)
-        {
-            _tileData.Owner = owner;
-
-            if (owner is not null)
-                _renderer.color = Owner.Color;
+            var tileText = GetComponentInChildren<TextMeshProUGUI>();
+            tileText.text = Resources[0].ToString();
         }
 
         public void SetDetailsPaneSelected()
@@ -91,10 +70,10 @@ namespace Incorporation.Assets.Scripts.TileGrid
 
         public void SetDetailsPaneDeselected()
         {
-            if (Owner is null)
+            if (_tileData.Owner is null)
                 _renderer.color = _unownedTileColor;
             else
-                _renderer.color = Owner.Color;
+                _renderer.color = OwnerColor;
             _detailPaneSelected = false;
         }
 
@@ -109,13 +88,13 @@ namespace Incorporation.Assets.Scripts.TileGrid
             if (_detailPaneSelected)
                 return;
 
-            if (Owner is null)
+            if (_tileData?.Owner is null)
             {
                 _renderer.color = _unownedTileColor;
             }
             else
             {
-                _renderer.color = Owner.Color;
+                _renderer.color = OwnerColor;
             }
         }
 

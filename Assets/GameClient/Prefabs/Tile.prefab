@@ -147,7 +147,6 @@ GameObject:
   - component: {fileID: 6730570100932896176}
   - component: {fileID: 6730570100932896179}
   - component: {fileID: 6730570100932896178}
-  - component: {fileID: -351884083852499328}
   - component: {fileID: 7861788698859249923}
   m_Layer: 0
   m_Name: Tile
@@ -268,20 +267,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _tileClickEventChannel: {fileID: 11400000, guid: 6fc5c94d4fe92ad47a42ac4dba58c181, type: 2}
---- !u!114 &-351884083852499328
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6730570100932896077}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b31dc50ad79996742897a508dc97cbed, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Owner: {fileID: 0}
-  Resources: 
+  maxPossibleYield: 10
 --- !u!222 &7861788698859249923
 CanvasRenderer:
   m_ObjectHideFlags: 0

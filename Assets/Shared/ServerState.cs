@@ -1,4 +1,5 @@
 ﻿using Shared.Players;
+using Shared.Tiles;
 using System;
 using System.Collections.Generic;
 
@@ -8,6 +9,8 @@ namespace Shared
     {
         LOBBY,
         SETUP,
+        READYCHECK,
+        SETUPCOMPLETE,
         LOCALPLAYERTURN,
         REMOTEPLAYERTURN,
         MARKETTURN,
@@ -20,6 +23,9 @@ namespace Shared
     {
         public string Id { get; set; }
 
+        public int MapWidth { get; set; } = 5;
+        public int MapHeight { get; set; } = 5;
+
         public GameState State { get; set; }
 
         public PlayerData LocalPlayer { get; set; }
@@ -29,16 +35,19 @@ namespace Shared
 #nullable disable
 
         public List<PlayerData> Players { get; set; } = new();
+        
+        public List<TileData> Tiles { get; set; } = new();
+
+        [NonSerialized]
+        public TileData[,] TileMap;
 
         public ServerState() { }
-        public ServerState(string id)
-        {
-            Id = id;
-        }
+
         public ServerState(string id, PlayerData player)
         {
             Id = id;
             Players.Add(player);
+            TileMap = new TileData[MapWidth, MapHeight];
         }
     }
 }

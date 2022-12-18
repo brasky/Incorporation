@@ -40,7 +40,7 @@ public class Lobby : MonoBehaviour
 
     public void StartGame()
     {
-        SceneManager.LoadScene("GameScene");
+        _client.StartGame();
     }
 
     void Awake()
@@ -66,7 +66,7 @@ public class Lobby : MonoBehaviour
             _gameData.State = GameState.LOBBY;
         }
 
-        Debug.Log("Received ServerState Update");
+        Debug.Log($"LOBBY: Received ServerState Update - {serverState.State}");
         _gameData.Id = serverState.Id;
         _gameData.State = serverState.State;
         _gameData.Players.Clear();
@@ -76,6 +76,8 @@ public class Lobby : MonoBehaviour
             {
                 var localPlayer = Instantiate(playerPrefab);
                 localPlayer.Id = player.Id;
+                localPlayer.PlayerData = player;
+                localPlayer.PlayerData.IsReady = player.IsReady;
                 DontDestroyOnLoad(localPlayer);
                 _gameData.Players.Add(localPlayer);
                 _gameData.LocalPlayer = localPlayer;
@@ -84,6 +86,8 @@ public class Lobby : MonoBehaviour
             {
                 var remotePlayer = Instantiate(remotePlayerPrefab);
                 remotePlayer.Id = player.Id;
+                remotePlayer.PlayerData = player;
+                remotePlayer.PlayerData.IsReady = player.IsReady;
                 DontDestroyOnLoad(remotePlayer);
                 _gameData.Players.Add(remotePlayer);
             }
@@ -107,9 +111,15 @@ public class Lobby : MonoBehaviour
             UpdatePlayerList();
         }
 
-        if (_gameData.State == GameState.SETUP)
+        if (_gameData is not null && _gameData.State == GameState.READYCHECK && !_gameData.LocalPlayer.PlayerData.IsReady)
         {
-            StartGame();
+            _client.Ready();
+        }
+
+        if (_gameData is not null && _gameData.State == GameState.SETUPCOMPLETE)
+        {
+            _gameDataEventChannel.RaiseEvent(_gameData);
+            SceneManager.LoadScene("GameScene");
         }
     }
 

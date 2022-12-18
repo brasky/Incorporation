@@ -58,6 +58,7 @@
   <ItemGroup>
     <Compile Include="Assets\Shared\Players\PlayerData.cs" />
     <Compile Include="Assets\Shared\Resources\Resource.cs" />
+    <Compile Include="Assets\Shared\Tiles\TileData.cs" />
     <Compile Include="Assets\Shared\ServerState.cs" />
     <Compile Include="Assets\Shared\Resources\ResourceCost.cs" />
   </ItemGroup>
