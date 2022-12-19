@@ -41,12 +41,10 @@ public class Lobby : MonoBehaviour
 
     public void StartGame()
     {
+        if (!_gameData.LocalPlayer.PlayerData.IsHost) return;
+
+        _gameData.LocalPlayer.PlayerData.IsReady = true;
         _client.StartGame();
-    }
-
-    void Awake()
-    {
-
     }
 
     void Start()

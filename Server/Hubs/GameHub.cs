@@ -92,7 +92,7 @@ namespace Server.Hubs
                 Server.SetupGame(game);
 
                 game.State = GameState.READYCHECK;
-                await SendGameState(groupId, "ReadyCheck");
+                await SendGameState(groupId, "RefreshGameState");
             }
         }
 
