@@ -39,6 +39,7 @@ namespace Server.Hubs
         {
             string groupId = Guid.NewGuid().ToString();
             PlayerData player = new PlayerData(Context.ConnectionId);
+            logger.LogInformation($"player color is {player.PlayerColor.R}");
             player.IsHost = true;
             games[groupId] = new ServerState(groupId, player);
             await Groups.AddToGroupAsync(Context.ConnectionId, groupId);

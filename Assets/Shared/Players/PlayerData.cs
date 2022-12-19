@@ -5,6 +5,25 @@ using UnityEngine;
 
 namespace Shared.Players
 {
+    public struct PlayerColor
+    {
+        public PlayerColor(float r, float g, float b)
+        {
+            R = r;
+            G = g;
+            B = b;
+        }
+
+        public float R { get; set; }
+        public float G { get; set; }
+        public float B { get; set; }
+
+        public static implicit operator Color(PlayerColor c)
+        {
+            return new Color(c.R, c.G, c.B);
+        }
+    }
+
     [Serializable]
     public class PlayerData
     {
@@ -15,6 +34,8 @@ namespace Shared.Players
             Id = id;
             Name = id;
             Money = StartingMoney;
+            var rand = new System.Random();
+            PlayerColor = new PlayerColor((float)rand.Next()/int.MaxValue, (float)rand.Next() / int.MaxValue, (float)rand.Next() / int.MaxValue);
         }
 
         public string Id { get; private set; } = string.Empty;
@@ -29,7 +50,7 @@ namespace Shared.Players
 
         private Dictionary<Resource, int> _resources = new();
 
-        public Color Color;
+        public PlayerColor PlayerColor { get; set; }
         
         //public ReadOnlyDictionary<Resource, int> Resources => new ReadOnlyDictionary<Resource, int>(_resources);
 

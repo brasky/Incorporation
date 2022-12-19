@@ -55,12 +55,6 @@ namespace Incorporation
             _gameDataChannel.OnEventRaised -= UpdateGameData;
         }
 
-        // Update is called once per frame
-        void Update()
-        {
-        
-        }
-
         public void EndTurnButtonPress()
         {
             if (_gameData.ActivePlayer.Id == _client.LocalPlayerId)
