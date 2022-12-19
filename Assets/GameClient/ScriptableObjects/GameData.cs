@@ -14,11 +14,17 @@ namespace Incorporation.Assets.ScriptableObjects
 
         public int MapHeight { get; set; }
 
+        public int TurnCount { get; set; } = 0;
+
         public GameState State { get; set; }
 
         public Player LocalPlayer { get; set; }
 
+        public bool PlayerActionApproved { get; set; } = false;
+
 #nullable enable
+        public PlayerAction? PlayerAction { get; set; }
+
         public Player? ActivePlayer { get; set; }
 #nullable disable
 

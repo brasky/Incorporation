@@ -2,7 +2,7 @@
 
 namespace Incorporation.Assets.Scripts.Players
 {
-    public class TheMarket : Player
-    {
-    }
+    //public class TheMarket : Player
+    //{
+    //}
 }

@@ -11,11 +11,15 @@ namespace Shared
         SETUP,
         READYCHECK,
         SETUPCOMPLETE,
-        LOCALPLAYERTURN,
-        REMOTEPLAYERTURN,
+        PLAYERTURN,
         MARKETTURN,
         WON,
         LOST
+    }
+
+    public enum PlayerAction
+    {
+        ENDTURN
     }
 
     [Serializable]
@@ -25,17 +29,22 @@ namespace Shared
 
         public int MapWidth { get; set; } = 5;
         public int MapHeight { get; set; } = 5;
+        public int TurnCount { get; set; } = 0;
 
         public GameState State { get; set; }
 
         public PlayerData LocalPlayer { get; set; }
+
+        public bool PlayerActionApproved { get; set; } = false;
 
 #nullable enable
         public PlayerData? ActivePlayer { get; set; }
 #nullable disable
 
         public List<PlayerData> Players { get; set; } = new();
-        
+
+        public List<PlayerData> TurnOrder { get; set; }
+
         public List<TileData> Tiles { get; set; } = new();
 
         [NonSerialized]
@@ -47,6 +56,7 @@ namespace Shared
         {
             Id = id;
             Players.Add(player);
+            player.IsHost = true;
             TileMap = new TileData[MapWidth, MapHeight];
         }
     }

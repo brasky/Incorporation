@@ -102,5 +102,10 @@ namespace Incorporation
         {
             Hub.Send("StartGame", ServerState.Id);
         }
+
+        public void SendAction(PlayerAction actionTaken)
+        {
+            Hub.Send("Action", actionTaken);
+        }
     }
 }

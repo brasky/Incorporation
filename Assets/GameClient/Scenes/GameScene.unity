@@ -152,8 +152,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 56b6f39b8de79b44aa1d6fd9816f4855, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  width: 5
-  height: 5
   tilePrefab: {fileID: 6730570100932896178, guid: 2bd2a2e73b9f89c4889baf02a7dabef7, type: 3}
   camera: {fileID: 601134659}
 --- !u!4 &6989305
@@ -1868,7 +1866,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _gameDataChannel: {fileID: 11400000, guid: d682072585ecc0646a9ea4b2f603f105, type: 2}
-  _endTurnChannel: {fileID: 11400000, guid: 1735be1a600ae0e4f9b5db522a2e73b5, type: 2}
+  _actionEventChannel: {fileID: 11400000, guid: 20b4ccc7879be8b499eb8fc38a9dbeef, type: 2}
   _tileClickChannel: {fileID: 11400000, guid: 6fc5c94d4fe92ad47a42ac4dba58c181, type: 2}
   _requestGameDataUpdateChannel: {fileID: 11400000, guid: 448898553ec95c8449e5f5619132c09f, type: 2}
   _canvas: {fileID: 1622508209}
@@ -2570,12 +2568,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _numberOfPlayers: 2
-  _baseIncome: 0
-  _endTurnEventChannel: {fileID: 11400000, guid: 1735be1a600ae0e4f9b5db522a2e73b5, type: 2}
+  _actionEventChannel: {fileID: 11400000, guid: 20b4ccc7879be8b499eb8fc38a9dbeef, type: 2}
   _gameDataEventChannel: {fileID: 11400000, guid: d682072585ecc0646a9ea4b2f603f105, type: 2}
   _requestGameDataUpdateChannel: {fileID: 11400000, guid: 448898553ec95c8449e5f5619132c09f, type: 2}
   playerPrefab: {fileID: 8558111331282226123, guid: e87c4a100faaa20438166f276b45d3b3, type: 3}
-  theMarketPrefab: {fileID: 7574093270623595996, guid: 950138ac1fbc3a54c8ade55ab1a396cd, type: 3}
   remotePlayerPrefab: {fileID: 239937120233065645, guid: 3590f3a7677d8aa4c8a137e61ecb28f1, type: 3}
   gridManager: {fileID: 6989304}
 --- !u!4 &1455372929

@@ -1,8 +1,10 @@
+using Assets.GameClient.ScriptableObjects.EventChannels;
 using Incorporation.Assets.ScriptableObjects;
 using Incorporation.Assets.ScriptableObjects.EventChannels;
 using Incorporation.Assets.Scripts.Players;
 using Incorporation.Assets.Scripts.TileGrid;
 using Shared;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,11 +19,8 @@ namespace Incorporation
         [SerializeField]
         private int _numberOfPlayers;
 
-        [SerializeField] 
-        private int _baseIncome;
-
         [SerializeField]
-        private VoidEventChannel _endTurnEventChannel;
+        private PlayerActionEventChannel _actionEventChannel;
 
         [SerializeField]
         private GameDataEventChannel _gameDataEventChannel;
@@ -32,9 +31,6 @@ namespace Incorporation
         [SerializeField]
         private Player playerPrefab;
 
-        //[SerializeField]
-        //private Player theMarketPrefab;
-
         [SerializeField]
         private RemotePlayer remotePlayerPrefab;
 
@@ -43,19 +39,14 @@ namespace Incorporation
 
         private SignalRClient _client => SignalRClient.Instance;
 
-        private int turnCount = -1;
         private bool _haveStartedPollingForRemotePlayer = false;
 
         public int TurnOrderIndex { get; private set; } = 0;
-        public IReadOnlyList<Player> TurnOrder {  get; private set; }
         public IReadOnlyCollection<Player> Players => _gameData.Players;
 
         void Awake()
         {
             _gameData = _gameDataEventChannel.MostRecentState;
-
-            //TODO: shuffle turn order
-            TurnOrder = _gameData.Players;
 
             _client.OnServerStateUpdate += UpdateServerState;
             _client.RequestGameState();
@@ -68,11 +59,28 @@ namespace Incorporation
             _gameData.MapWidth = serverState.MapWidth;
             _gameData.MapHeight = serverState.MapHeight;
 
+            _gameData.PlayerActionApproved = serverState.PlayerActionApproved;
+
             foreach(var player in _gameData.Players)
             {
-                var newData = serverState.Players.Where(p => p.Id == player.Id).First();
+                try
+                {
+                    var newData = serverState.Players.Where(p => p.Id == player.Id).First();
 
-                player.PlayerData = newData;
+                    player.PlayerData = newData;
+                }
+                catch(Exception ex)
+                {
+                    Debug.LogError($"Error updating player {player.Id}");
+                }
+            }
+            try
+            {
+                _gameData.ActivePlayer = _gameData.Players.Where(p => p.Id == serverState.ActivePlayer.Id).First();
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"Error updating active player");
             }
 
             gridManager.UpdateGrid(_gameData.Tiles, serverState);
@@ -81,9 +89,8 @@ namespace Incorporation
 
         void Start()
         {
-            _endTurnEventChannel.OnEventRaised += MoveNextPhase;
+            _actionEventChannel.OnEventRaised += ProcessAction;
             _requestGameDataUpdateChannel.OnEventRaised += SendGameData;
-            //MoveNextPhase();
         }
 
         void SendGameData()
@@ -91,80 +98,32 @@ namespace Incorporation
             _gameDataEventChannel.RaiseEvent(_gameData);
         }
 
-        void MoveNextPhase()
+        void ProcessAction(PlayerAction action)
         {
-            var previousState = _gameData.State;
-            Debug.Log($"LEAVING PHASE {_gameData.State}");
-            turnCount++;
-            _gameData.ActivePlayer = TurnOrder[turnCount % _gameData.Players.Count];
+            _gameData.PlayerAction = action;
 
-            if (previousState == GameState.SETUPCOMPLETE)
+            if (_gameData.PlayerAction == PlayerAction.ENDTURN)
             {
-                _gameData.State = _gameData.ActivePlayer.Id == _client.LocalPlayerId ? GameState.LOCALPLAYERTURN 
-                                                                                            : GameState.REMOTEPLAYERTURN;
+                _client.SendAction(action);
             }
-
-            if(previousState == GameState.LOCALPLAYERTURN)
-            {
-                _gameData.State = GameState.REMOTEPLAYERTURN;
-                _haveStartedPollingForRemotePlayer = false;
-            }
-            
-            if(previousState == GameState.REMOTEPLAYERTURN)
-            {
-                _gameData.State = GameState.LOCALPLAYERTURN;
-            }
-
-            Debug.Log($"ENTERING PHASE {_gameData.State}");
-
-
-            //_gameData.ActivePlayer = _players[turnCount % _numberOfPlayers];
-            //if (_gameData.ActivePlayer.IsTheMarket)
-            //{
-            //    _gameData.State = GameState.MARKETTURN;
-            //}
-            //else
-            //{
-            //    _gameData.State = _gameData.ActivePlayer.IsRemote ? GameState.REMOTEPLAYERTURN : GameState.LOCALPLAYERTURN;
-            //    _haveStartedPollingForRemotePlayer = false;
-            //}
-
-            //if (_gameData.State == GameState.LOCALPLAYERTURN)
-            //{
-            //    GiveIncomeToActivePlayer();
-            //    GiveTileYieldsToActivePlayer();
-            //}
-
-            //_gameDataEventChannel.RaiseEvent(_gameData);
         }
-
-        //private void GiveIncomeToActivePlayer()
-        //{
-        //    _gameData.ActivePlayer.ReceiveMoney(_gameData.ActivePlayer.Income + _baseIncome);
-        //}
-
-        //private void GiveTileYieldsToActivePlayer()
-        //{
-        //    var ownedTiles = gridManager.GetTilesOwnedByPlayer(_gameData.ActivePlayer, includeUnimproved: true);
-
-        //    foreach(Resource resource in Enum.GetValues(typeof(Resource)))
-        //    {
-        //        var improvedResourceTiles = ownedTiles.Where(t => t.IsImproved && t.Resources.Any(r => r == resource)).ToArray();
-        //        var unimprovedResourceTiles = ownedTiles.Where(t => !t.IsImproved && t.Resources.Any(r => r == resource)).ToArray();
-        //        _gameData.ActivePlayer.AddResource(resource, (int)(improvedResourceTiles.Sum(t => Math.Ceiling(t.Yield * 1.5)) + unimprovedResourceTiles.Sum(t => t.Yield)));
-        //    }
-        //}
 
         // Update is called once per frame
         void Update()
         {
-            if (_gameData.State == GameState.SETUPCOMPLETE)
+            if (_gameData.PlayerAction is not null && _gameData.PlayerActionApproved)
             {
-                MoveNextPhase();
-                SendGameData();
+                
             }
 
-            if (_gameData.State == GameState.REMOTEPLAYERTURN && !_haveStartedPollingForRemotePlayer)
+            if (_gameData.ActivePlayer is null)
+            {
+            }
+
+            if (_gameData.State == GameState.PLAYERTURN &&
+                _gameData.ActivePlayer is not null &&
+                _gameData.ActivePlayer.Id != _client.LocalPlayerId && 
+                !_haveStartedPollingForRemotePlayer)
             {
                 _haveStartedPollingForRemotePlayer = true;
                 StartCoroutine(WaitForRemotePlayer());
@@ -172,7 +131,7 @@ namespace Incorporation
 
             if (_gameData.State == GameState.MARKETTURN)
             {
-                MoveNextPhase();
+                //MoveNextPhase();
             }
         }
 
@@ -185,7 +144,7 @@ namespace Incorporation
 
             Debug.Log("Remote player is finally done!");
 
-            MoveNextPhase();
+            //MoveNextPhase();
         }
     }
 }

@@ -9,8 +9,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7c6d5d9022b80f54a8dd4dfb674507ed, type: 3}
-  m_Name: endTurnChannel
+  m_Script: {fileID: 11500000, guid: 3ec2c47e81754644f93fac2ace6e2cb6, type: 3}
+  m_Name: actionEventChannel
   m_EditorClassIdentifier: 
   _guid: 
   description: 

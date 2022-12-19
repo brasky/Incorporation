@@ -6,6 +6,7 @@ using Shared;
 using System.Linq;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Playables;
 using UnityEngine.SceneManagement;
 
 public class Lobby : MonoBehaviour
@@ -74,26 +75,30 @@ public class Lobby : MonoBehaviour
         {
             if (player.Id == _client.LocalPlayerId)
             {
-                var localPlayer = Instantiate(playerPrefab);
-                localPlayer.Id = player.Id;
+                var localPlayer = new Player(player.Id);
                 localPlayer.PlayerData = player;
                 localPlayer.PlayerData.IsReady = player.IsReady;
-                DontDestroyOnLoad(localPlayer);
                 _gameData.Players.Add(localPlayer);
                 _gameData.LocalPlayer = localPlayer;
             }
             else
             {
-                var remotePlayer = Instantiate(remotePlayerPrefab);
+                var remotePlayer = new RemotePlayer(player.Id);
                 remotePlayer.Id = player.Id;
                 remotePlayer.PlayerData = player;
                 remotePlayer.PlayerData.IsReady = player.IsReady;
-                DontDestroyOnLoad(remotePlayer);
                 _gameData.Players.Add(remotePlayer);
             }
         }
         UpdateLobbyId();
         UpdatePlayerList();
+
+        if (_gameData.State == GameState.SETUPCOMPLETE)
+        {
+            _gameDataEventChannel.RaiseEvent(_gameData);
+            SceneManager.LoadScene("GameScene");
+        }
+
         _gameDataEventChannel.RaiseEvent(_gameData);
     }
 
@@ -106,20 +111,12 @@ public class Lobby : MonoBehaviour
         {
             _timer = 0.0f;
             _client.RequestGameState();
-
-            UpdateLobbyId();
-            UpdatePlayerList();
         }
 
         if (_gameData is not null && _gameData.State == GameState.READYCHECK && !_gameData.LocalPlayer.PlayerData.IsReady)
         {
+            _gameData.LocalPlayer.PlayerData.IsReady = true;
             _client.Ready();
-        }
-
-        if (_gameData is not null && _gameData.State == GameState.SETUPCOMPLETE)
-        {
-            _gameDataEventChannel.RaiseEvent(_gameData);
-            SceneManager.LoadScene("GameScene");
         }
     }
 

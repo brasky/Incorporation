@@ -1,3 +1,4 @@
+using Assets.GameClient.ScriptableObjects.EventChannels;
 using Incorporation.Assets.ScriptableObjects;
 using Incorporation.Assets.ScriptableObjects.EventChannels;
 using Incorporation.Assets.Scripts.TileGrid;
@@ -17,7 +18,7 @@ namespace Incorporation
         private GameDataEventChannel _gameDataChannel;
 
         [SerializeField]
-        private VoidEventChannel _endTurnChannel;
+        private PlayerActionEventChannel _actionEventChannel;
 
         [SerializeField]
         private TileEventChannel _tileClickChannel;
@@ -58,7 +59,7 @@ namespace Incorporation
         public void EndTurnButtonPress()
         {
             if (_gameData.ActivePlayer.Id == _client.LocalPlayerId)
-                _endTurnChannel.RaiseEvent();
+                _actionEventChannel.RaiseEvent(PlayerAction.ENDTURN);
         }
 
         private void UpdateGameData(GameData gameData)
@@ -134,11 +135,11 @@ namespace Incorporation
 
         public void OnBuyButtonPress()
         {
-            if (_gameData.ActivePlayer.TryMakePurchase(_currentTile.Price))
-            {
-                //_currentTile.SetOwner(_gameData.ActivePlayer);
-                _requestGameDataUpdateChannel.RaiseEvent();
-            }
+            //if (_gameData.ActivePlayer.TryMakePurchase(_currentTile.Price))
+            //{
+            //    //_currentTile.SetOwner(_gameData.ActivePlayer);
+            //    _requestGameDataUpdateChannel.RaiseEvent();
+            //}
 
             SetBuyButtonVisibility();
             SetImproveButtonVisibility();
@@ -147,13 +148,13 @@ namespace Incorporation
 
         public void OnImproveButtonPress()
         {
-            if (_gameData.ActivePlayer.TryMakePurchase(_currentTile.ResourceCosts))
-            {
-                //_currentTile.Improve();
-                SetImproveButtonVisibility();
-                OpenDetailsPanel(_currentTile);
-                UpdatePlayerDetailsPanel();
-            }
+            //if (_gameData.ActivePlayer.TryMakePurchase(_currentTile.ResourceCosts))
+            //{
+            //    //_currentTile.Improve();
+            //    SetImproveButtonVisibility();
+            //    OpenDetailsPanel(_currentTile);
+            //    UpdatePlayerDetailsPanel();
+            //}
         }
     }
 }

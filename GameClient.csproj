@@ -73,6 +73,7 @@
     <Compile Include="Assets\GameClient\Scripts\Players\Player.cs" />
     <Compile Include="Assets\GameClient\ScriptableObjects\EventChannels\VoidEventChannel.cs" />
     <Compile Include="Assets\GameClient\Scripts\TileGrid\Tile.cs" />
+    <Compile Include="Assets\GameClient\ScriptableObjects\EventChannels\PlayerActionEventChannel.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\GameClient\TextMesh Pro\Shaders\TMPro.cginc" />

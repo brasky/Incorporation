@@ -3,6 +3,7 @@ using Shared;
 using Shared.Players;
 using Shared.Tiles;
 using System.Collections.Concurrent;
+using System.Diagnostics;
 
 namespace Server.Hubs
 {
@@ -40,7 +41,6 @@ namespace Server.Hubs
             string groupId = Guid.NewGuid().ToString();
             PlayerData player = new PlayerData(Context.ConnectionId);
             logger.LogInformation($"player color is {player.PlayerColor.R}");
-            player.IsHost = true;
             games[groupId] = new ServerState(groupId, player);
             await Groups.AddToGroupAsync(Context.ConnectionId, groupId);
             await NewLobbyCreated(groupId);
@@ -105,11 +105,20 @@ namespace Server.Hubs
             if (game.Players.All(p => p.IsReady))
             {
                 game.State = GameState.SETUPCOMPLETE;
+                await SendGameState(groupId, "RefreshGameState");
+
+                game.State = GameState.PLAYERTURN;
+                await SendGameState(groupId, "RefreshGameState");
             }
+        }
 
-            logger.LogInformation($"{game.Players.Count(p => p.IsReady)} players ready");
-
-            await SendGameState(groupId, "RefreshGameState");
+        public async Task Action(PlayerAction actionTaken)
+        {
+            var game = games.Values.Where(s => s.Players.Any(p => p.Id == Context.ConnectionId)).First();
+            var success = Server.ProcessAction(actionTaken, game);
+            logger.LogInformation($"Turn {game.TurnCount} | Player {game.ActivePlayer.Id} | Action {actionTaken} | Successful: {success}");
+            await SendGameState(game.Id, "RefreshGameState");
+            game.PlayerActionApproved = false;
         }
     }
 
@@ -117,9 +126,50 @@ namespace Server.Hubs
     {
         public static void SetupGame(ServerState state)
         {
+            state.TurnOrder = state.Players;
+            state.TurnOrder.Shuffle();
+            state.ActivePlayer = state.TurnOrder[0];
             GenerateTiles(state);
             AssignStartingTiles(state);
         }
+
+        public static bool ProcessAction(PlayerAction actionTaken, ServerState currentState)
+        {
+            if (actionTaken == PlayerAction.ENDTURN)
+            {
+                return EndTurn(currentState);
+            }
+
+            return false;
+        }
+
+        private static bool EndTurn(ServerState currentState)
+        {
+            currentState.PlayerActionApproved = true;
+            currentState.TurnCount++;
+            currentState.ActivePlayer = currentState.TurnOrder[currentState.TurnCount % currentState.Players.Count];
+
+            GiveIncomeToActivePlayer(currentState);
+            currentState.State = GameState.PLAYERTURN;
+            return true;
+        }
+
+        private static void GiveIncomeToActivePlayer(ServerState currentState)
+        {
+            currentState.ActivePlayer.Money += currentState.ActivePlayer.Income + 1;
+        }
+
+        //private void GiveTileYieldsToActivePlayer()
+        //{
+        //    var ownedTiles = gridManager.GetTilesOwnedByPlayer(_gameData.ActivePlayer, includeUnimproved: true);
+
+        //    foreach(Resource resource in Enum.GetValues(typeof(Resource)))
+        //    {
+        //        var improvedResourceTiles = ownedTiles.Where(t => t.IsImproved && t.Resources.Any(r => r == resource)).ToArray();
+        //        var unimprovedResourceTiles = ownedTiles.Where(t => !t.IsImproved && t.Resources.Any(r => r == resource)).ToArray();
+        //        _gameData.ActivePlayer.AddResource(resource, (int)(improvedResourceTiles.Sum(t => Math.Ceiling(t.Yield * 1.5)) + unimprovedResourceTiles.Sum(t => t.Yield)));
+        //    }
+        //} 
 
         private static void AssignStartingTiles(ServerState state)
         {
@@ -141,6 +191,21 @@ namespace Server.Hubs
                     state.Tiles.Add(data);
                     state.TileMap[x, y] = data;
                 }
+            }
+        }
+
+        private static Random rng = new Random();
+
+        public static void Shuffle<T>(this IList<T> list)
+        {
+            int n = list.Count;
+            while (n > 1)
+            {
+                n--;
+                int k = rng.Next(n + 1);
+                T value = list[k];
+                list[k] = list[n];
+                list[n] = value;
             }
         }
     }

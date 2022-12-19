@@ -1,6 +1,7 @@
 using Incorporation.Assets.Scripts.Players;
 using Shared;
 using Shared.Tiles;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -38,13 +39,21 @@ namespace Incorporation.Assets.Scripts.TileGrid
 
         public void UpdateGrid(List<Tile> gameDataTiles, ServerState serverState)
         {
-            width = serverState.MapWidth;
-            height= serverState.MapHeight;
-
-            if (_tileMap is null || _tiles is null)
+            try
             {
-                GenerateGrid(serverState.Tiles);
-                gameDataTiles.AddRange(_tiles);
+                width = serverState.MapWidth;
+                height = serverState.MapHeight;
+
+                if (_tileMap is null || _tiles is null)
+                {
+                    GenerateGrid(serverState.Tiles);
+                    gameDataTiles.AddRange(_tiles);
+                }
+            }
+            catch(Exception ex)
+            {
+                Debug.LogError($"Exception during UpdateGrid");
+                Debug.LogError(ex.Message);
             }
         }
 

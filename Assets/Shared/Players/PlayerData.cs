@@ -46,7 +46,7 @@ namespace Shared.Players
 
         public bool IsReady { get; set; } = false;
 
-        public int Money { get; private set; } = 0;
+        public int Money { get; set; } = 0;
 
         private Dictionary<Resource, int> _resources = new();
 
