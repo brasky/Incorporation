@@ -116,7 +116,23 @@ namespace Server.Hubs
     {
         public static void SetupGame(ServerState state)
         {
-            for(var x = 0; x < state.MapWidth; x++)
+            GenerateTiles(state);
+            AssignStartingTiles(state);
+        }
+
+        private static void AssignStartingTiles(ServerState state)
+        {
+            var rand = new Random();
+            foreach (var player in state.Players)
+            {
+                var unownedTiles = state.Tiles.Where(t => t.Owner is null).ToList();
+                unownedTiles[rand.Next(0, unownedTiles.Count-1)].Owner = player;
+            }
+        }
+
+        private static void GenerateTiles(ServerState state)
+        {
+            for (var x = 0; x < state.MapWidth; x++)
             {
                 for (var y = 0; y < state.MapWidth; y++)
                 {

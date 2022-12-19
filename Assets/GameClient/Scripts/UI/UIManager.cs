@@ -115,7 +115,7 @@ namespace Incorporation
             SetImproveButtonVisibility();
 
             var text = _tileDetailsPanel.GetComponentsInChildren<TextMeshProUGUI>();
-            text.Where(t => t.name == "Tile Owner Data").First().text = tile.Owner?.name;
+            text.Where(t => t.name == "Tile Owner Data").First().text = tile.Owner?.Name;
 
             text.Where(t => t.name == "Tile Resource Data").First().text = tile.Resources[0].ToString();
 

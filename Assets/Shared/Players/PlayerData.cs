@@ -1,6 +1,7 @@
 ﻿using Shared.Resources;
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace Shared.Players
 {
@@ -12,12 +13,13 @@ namespace Shared.Players
         public PlayerData(string id)
         {
             Id = id;
+            Name = id;
             Money = StartingMoney;
         }
 
         public string Id { get; private set; } = string.Empty;
 
-        public string name { get; set; } = string.Empty;
+        public string Name { get; set; } = string.Empty;
 
         public bool IsHost { get; set; } = false;
 
@@ -27,6 +29,7 @@ namespace Shared.Players
 
         private Dictionary<Resource, int> _resources = new();
 
+        public Color Color;
         
         //public ReadOnlyDictionary<Resource, int> Resources => new ReadOnlyDictionary<Resource, int>(_resources);
 

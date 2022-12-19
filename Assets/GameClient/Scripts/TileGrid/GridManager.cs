@@ -58,7 +58,6 @@ namespace Incorporation.Assets.Scripts.TileGrid
                 for (int y = 0; y < height; y++)
                 {
                     var tile = Instantiate(tilePrefab, new Vector3(x, y, 0), Quaternion.identity);
-                    //tile.SetOwner(null);
                     tile._tileData = tiles[x * width + y];
                     _tileMap[x, y] = tile;
                     _tiles.Add(tile);

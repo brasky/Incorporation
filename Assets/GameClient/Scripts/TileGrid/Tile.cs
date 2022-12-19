@@ -15,7 +15,7 @@ namespace Incorporation.Assets.Scripts.TileGrid
 
         private bool _detailPaneSelected = false;
         private Color _unownedTileColor = new Color(0.86f, 0.86f, 0.86f);
-        public Color OwnerColor { get; set; } = new Color(0.0f, 0.0f, 0.0f);
+        public Color OwnerColor => _tileData.Owner.Color;
 
         public PlayerData Owner => _tileData.Owner;
         public bool IsImproved => _tileData.IsImproved;

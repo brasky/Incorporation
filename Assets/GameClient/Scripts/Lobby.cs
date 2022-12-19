@@ -91,6 +91,8 @@ public class Lobby : MonoBehaviour
                 DontDestroyOnLoad(remotePlayer);
                 _gameData.Players.Add(remotePlayer);
             }
+
+            player.Color = Random.ColorHSV();
         }
         UpdateLobbyId();
         UpdatePlayerList();

@@ -2,7 +2,6 @@
 using Incorporation.Assets.ScriptableObjects.EventChannels;
 using Shared.Players;
 using Shared.Resources;
-using UnityEditor.PackageManager;
 using UnityEngine;
 
 namespace Incorporation.Assets.Scripts.Players
@@ -16,8 +15,6 @@ namespace Incorporation.Assets.Scripts.Players
         //Eventually would like a way to lock set to the game manager 
         public PlayerData PlayerData { get; set; }
 
-        public Color Color { get; set; } = new Color(0.07f, 0.666f, 0);
-
         [SerializeField]
         private VoidEventChannel _endTurnEventChannel;
 
@@ -30,8 +27,12 @@ namespace Incorporation.Assets.Scripts.Players
 
         void Awake()
         {
-            Id = _client.LocalPlayerId;
             _gameDataEventChannel.OnEventRaised += UpdateGameData;
+        }
+        
+        void Start()
+        {
+            Id = _client.LocalPlayerId;
         }
 
         void OnDestroy()
