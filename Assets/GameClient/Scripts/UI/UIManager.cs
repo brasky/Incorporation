@@ -3,6 +3,7 @@ using Incorporation.Assets.ScriptableObjects;
 using Incorporation.Assets.ScriptableObjects.EventChannels;
 using Incorporation.Assets.Scripts.TileGrid;
 using Shared;
+using Shared.Resources;
 using System.Linq;
 using TMPro;
 using UnityEngine;
@@ -64,6 +65,8 @@ namespace Incorporation
 
         private void UpdateGameData(GameData gameData)
         {
+            Debug.Log("UI Manager: Updating game data");
+
             _gameData = gameData;
 
             if (gameData.State == GameState.SETUP)
@@ -77,8 +80,8 @@ namespace Incorporation
         {
             var text = _playerDetailsPanel.GetComponentsInChildren<TextMeshProUGUI>();
             text.Where(t => t.name == "Money Data").First().text = _gameData.LocalPlayer.PlayerData.Money.ToString();
-            //text.Where(t => t.name == "Wood Data").First().text = _gameData.LocalPlayer.PlayerData.GetAvailableResourceQuantity(Resource.Wood).ToString();
-            //text.Where(t => t.name == "Oil Data").First().text = _gameData.LocalPlayer.PlayerData.GetAvailableResourceQuantity(Resource.Oil).ToString();
+            text.Where(t => t.name == "Wood Data").First().text = _gameData.LocalPlayer.PlayerData.GetAvailableResourceQuantity(Resource.Wood).ToString();
+            text.Where(t => t.name == "Oil Data").First().text = _gameData.LocalPlayer.PlayerData.GetAvailableResourceQuantity(Resource.Oil).ToString();
         }
 
         private void UpdateEndTurnButton()

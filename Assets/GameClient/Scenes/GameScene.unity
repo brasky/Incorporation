@@ -2571,8 +2571,6 @@ MonoBehaviour:
   _actionEventChannel: {fileID: 11400000, guid: 20b4ccc7879be8b499eb8fc38a9dbeef, type: 2}
   _gameDataEventChannel: {fileID: 11400000, guid: d682072585ecc0646a9ea4b2f603f105, type: 2}
   _requestGameDataUpdateChannel: {fileID: 11400000, guid: 448898553ec95c8449e5f5619132c09f, type: 2}
-  playerPrefab: {fileID: 8558111331282226123, guid: e87c4a100faaa20438166f276b45d3b3, type: 3}
-  remotePlayerPrefab: {fileID: 239937120233065645, guid: 3590f3a7677d8aa4c8a137e61ecb28f1, type: 3}
   gridManager: {fileID: 6989304}
 --- !u!4 &1455372929
 Transform:
@@ -2831,6 +2829,14 @@ PrefabInstance:
     - target: {fileID: 7073706269788211825, guid: 489df07234d6e6d49b0bb62ac7a2dc95, type: 3}
       propertyPath: m_Name
       value: Oil Data
+      objectReference: {fileID: 0}
+    - target: {fileID: 7073706269788211827, guid: 489df07234d6e6d49b0bb62ac7a2dc95, type: 3}
+      propertyPath: m_text
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7073706269788211827, guid: 489df07234d6e6d49b0bb62ac7a2dc95, type: 3}
+      propertyPath: m_enableWordWrapping
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 489df07234d6e6d49b0bb62ac7a2dc95, type: 3}

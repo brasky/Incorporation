@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Shared.Resources
+﻿namespace Shared.Resources
 {
     public enum Resource
     {

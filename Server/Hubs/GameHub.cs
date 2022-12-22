@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.SignalR;
 using Shared;
 using Shared.Players;
+using Shared.Resources;
 using Shared.Tiles;
 using System.Collections.Concurrent;
 using System.Diagnostics;
@@ -58,6 +59,7 @@ namespace Server.Hubs
         private async Task SendGameState(string groupId, string channel)
         {
             logger.LogInformation($"Sending game state to: {groupId} - {games[groupId].State}");
+            var game = games[groupId];
             await Clients.Group(groupId).SendAsync(channel, games[groupId]);
         }
 
@@ -150,6 +152,7 @@ namespace Server.Hubs
             currentState.ActivePlayer = currentState.TurnOrder[currentState.TurnCount % currentState.Players.Count];
 
             GiveIncomeToActivePlayer(currentState);
+            GiveTileYieldsToActivePlayer(currentState);
             currentState.State = GameState.PLAYERTURN;
             return true;
         }
@@ -159,17 +162,21 @@ namespace Server.Hubs
             currentState.ActivePlayer.Money += currentState.ActivePlayer.Income + 1;
         }
 
-        //private void GiveTileYieldsToActivePlayer()
-        //{
-        //    var ownedTiles = gridManager.GetTilesOwnedByPlayer(_gameData.ActivePlayer, includeUnimproved: true);
+        private static void GiveTileYieldsToActivePlayer(ServerState currentState)
+        {
+            var ownedTiles = currentState.Tiles.Where(t => t.Owner?.Id == currentState.ActivePlayer.Id).ToList();
 
-        //    foreach(Resource resource in Enum.GetValues(typeof(Resource)))
-        //    {
-        //        var improvedResourceTiles = ownedTiles.Where(t => t.IsImproved && t.Resources.Any(r => r == resource)).ToArray();
-        //        var unimprovedResourceTiles = ownedTiles.Where(t => !t.IsImproved && t.Resources.Any(r => r == resource)).ToArray();
-        //        _gameData.ActivePlayer.AddResource(resource, (int)(improvedResourceTiles.Sum(t => Math.Ceiling(t.Yield * 1.5)) + unimprovedResourceTiles.Sum(t => t.Yield)));
-        //    }
-        //} 
+            foreach (Resource resource in Enum.GetValues(typeof(Resource)))
+            {
+                var improvedResourceTiles = ownedTiles.Where(t => t.IsImproved && t.Resources.Any(r => r == resource)).ToArray();
+                var unimprovedResourceTiles = ownedTiles.Where(t => !t.IsImproved && t.Resources.Any(r => r == resource)).ToArray();
+                var resourceAmount = (int)(improvedResourceTiles.Sum(t => Math.Ceiling(t.Yield * 1.5))+ unimprovedResourceTiles.Sum(t => t.Yield));
+                if (!currentState.ActivePlayer.Resources.TryAdd(resource.ToString(), resourceAmount))
+                {
+                    currentState.ActivePlayer.Resources[resource.ToString()] += resourceAmount;
+                }
+            }
+        }
 
         private static void AssignStartingTiles(ServerState state)
         {

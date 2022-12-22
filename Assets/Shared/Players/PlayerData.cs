@@ -48,16 +48,20 @@ namespace Shared.Players
 
         public int Money { get; set; } = 0;
 
-        private Dictionary<Resource, int> _resources = new();
+        public Dictionary<string, int> Resources { get; set; } = new();
 
         public PlayerColor PlayerColor { get; set; }
         
-        //public ReadOnlyDictionary<Resource, int> Resources => new ReadOnlyDictionary<Resource, int>(_resources);
-
         public int StartingMoney => 10;
 
         public int Income => 0;
 
-        //public int GetAvailableResourceQuantity(Resource resource) => Resources.ContainsKey(resource) ? Resources[resource] : 0;
+        public string GetAvailableResourceQuantity(Resource resource)
+        {
+            if (!Resources.TryGetValue(resource.ToString(), out var quantity))
+                quantity = 0;
+
+            return quantity.ToString();
+        }
     }
 }
